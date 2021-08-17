@@ -102,7 +102,7 @@ Put the JSON Boutiques descripot on the github repo and share the address with t
 The boutiques package can run pipelines. Try to run your pipeline with boutiques. In any case we can test it and if everything is ok will deploy. The web interface is built automatically from the JSON file description    
 
 
-V OTHER BEST PRACTICES
+# V OTHER BEST PRACTICES
 
 The tool should support relative paths at least for output files/folders (results). Learn1 more about best path practices in the following  Matlab blog
 

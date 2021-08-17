@@ -1,0 +1,758 @@
+{
+  "tool-version": "8.0",
+  "name": "PhysIO_Tapas",
+  "description": "Tapas Physio: Physiological noise correction for fMRI",
+  "author": "Lars Kasper, Zurich University and ETH Zurich",
+  "descriptor-url": "https://github.com/MontrealSergiy/cbrain_plugins_physiophilips/blob/master/cbrain_task_descriptors/tapasphysio.json",
+  "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/physiotapas [INDIR] [OUT] [configfile] [presetdefaults] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [ons_secs.c_scaling] [ons_secs.r_scaling] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [verbose.close_figs] [verbose.fig_output_file] [verbose.level] [verbose.save_figs] [verbose.show_figs] [verbose.use_tabs]",
+  "inputs": [
+    {
+      "description": "Input folder for physiological, fMRI and other data.",
+      "value-key": "[INDIR]",
+      "optional": false,
+      "list": false,
+      "type": "File",
+      "id": "in_dir",
+      "name": "Input folder"
+    },
+    {
+      "description": "Runs Correct noise",
+      "default-value": "No",
+      "value-key": "[correct]",
+      "command-line-flag": "correct",
+      "optional": false,
+      "list": false,
+      "value-choices": [
+        "No"
+      ],
+      "type": "String",
+      "id": "correct",
+      "name": "Correct noise"
+    },
+    {
+      "description": "The results are saved to folder obtained by adding this prefix to the input folder name",
+      "default-value": "Results_",
+      "value-key": "[OUT]",
+      "optional": false,
+      "type": "String",
+      "id": "out",
+      "name": "Output folder prefix"
+    },
+    {
+      "id": "log_files__align_scan",
+      "name": "log_files.align_scan",
+      "value-key": "[log_files.align_scan]",
+      "default-value": "last",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "last",
+        "first"
+      ],
+      "optional": true,
+      "command-line-flag": "log_files.align_scan"
+    },
+    {
+      "id": "log_files__cardiac",
+      "name": "log_files.cardiac",
+      "value-key": "[log_files.cardiac]",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "log_files.cardiac"
+    },
+    {
+      "id": "log_files__relative_start_acquisition",
+      "name": "log_files.relative_start_acquisition",
+      "value-key": "[log_files.relative_start_acquisition]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "log_files.relative_start_acquisition"
+    },
+    {
+      "id": "log_files__respiration",
+      "name": "log_files.respiration",
+      "value-key": "[log_files.respiration]",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "log_files.respiration"
+    },
+    {
+      "id": "log_files__scan_timing",
+      "name": "log_files.scan_timing",
+      "value-key": "[log_files.scan_timing]",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "log_files.scan_timing"
+    },
+    {
+      "id": "log_files__vendor",
+      "name": "log_files.vendor",
+      "value-key": "[log_files.vendor]",
+      "default-value": "Philips",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "BIDS",
+        "Biopac_Txt",
+        "Biopac_Mat",
+        "BrainProducts",
+        "Custom",
+        "GE",
+        "Philips",
+        "Siemens",
+        "Siemens_Tics",
+        "Siemens_HCP"
+      ],
+      "optional": true,
+      "command-line-flag": "log_files.vendor"
+    },
+    {
+      "id": "model__censor_unreliable_recording_intervals",
+      "name": "model.censor_unreliable_recording_intervals",
+      "value-key": "[model.censor_unreliable_recording_intervals]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.censor_unreliable_recording_intervals"
+    },
+    {
+      "id": "model__hrv__delays",
+      "name": "model.hrv.delays",
+      "value-key": "[model.hrv.delays]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "model.hrv.delays"
+    },
+    {
+      "id": "model__hrv__include",
+      "name": "model.hrv.include",
+      "value-key": "[model.hrv.include]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.hrv.include"
+    },
+    {
+      "id": "model__movement__censoring_method",
+      "name": "model.movement.censoring_method",
+      "value-key": "[model.movement.censoring_method]",
+      "default-value": "MAXVAL",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "MAXVAL",
+        "FD",
+        "DVARS"
+      ],
+      "optional": true,
+      "command-line-flag": "model.movement.censoring_method"
+    },
+    {
+      "id": "model__movement__censoring_threshold",
+      "name": "model.movement.censoring_threshold",
+      "value-key": "[model.movement.censoring_threshold]",
+      "default-value": [
+        0.5
+      ],
+      "type": "Number",
+      "description": "interval",
+      "optional": true,
+      "list": true,
+      "list-separator": ",",
+      "command-line-flag": "model.movement.censoring_threshold"
+    },
+    {
+      "id": "model__movement__file_realignment_parameters",
+      "name": "model.movement.file_realignment_parameters",
+      "value-key": "[model.movement.file_realignment_parameters]",
+      "default-value": "rp_fMRI.txt",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "model.movement.file_realignment_parameters"
+    },
+    {
+      "id": "model__movement__include",
+      "name": "model.movement.include",
+      "value-key": "[model.movement.include]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.movement.include"
+    },
+    {
+      "id": "model__movement__order",
+      "name": "model.movement.order",
+      "value-key": "[model.movement.order]",
+      "default-value": 6,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.movement.order"
+    },
+    {
+      "id": "model__noise_rois__force_coregister",
+      "name": "model.noise_rois.force_coregister",
+      "value-key": "[model.noise_rois.force_coregister]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.force_coregister"
+    },
+    {
+      "id": "model__noise_rois__include",
+      "name": "model.noise_rois.include",
+      "value-key": "[model.noise_rois.include]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.noise_rois.include"
+    },
+    {
+      "id": "model__noise_rois__n_components",
+      "name": "model.noise_rois.n_components",
+      "value-key": "[model.noise_rois.n_components]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.n_components"
+    },
+    {
+      "id": "model__noise_rois__n_voxel_crop",
+      "name": "model.noise_rois.n_voxel_crop",
+      "value-key": "[model.noise_rois.n_voxel_crop]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.n_voxel_crop"
+    },
+    {
+      "id": "model__noise_rois__thresholds",
+      "name": "model.noise_rois.thresholds",
+      "value-key": "[model.noise_rois.thresholds]",
+      "default-value": 0.9,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "model.noise_rois.thresholds"
+    },
+    {
+      "id": "model__orthogonalise",
+      "name": "model.orthogonalise",
+      "value-key": "[model.orthogonalise]",
+      "default-value": "none",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "none",
+        "cardiac",
+        "resp",
+        "mult",
+        "all",
+        "RETROICOR",
+        "HRV",
+        "RVT",
+        "movement",
+        "noise_rois"
+      ],
+      "optional": true,
+      "command-line-flag": "model.orthogonalise"
+    },
+    {
+      "id": "model__other__include",
+      "name": "model.other.include",
+      "value-key": "[model.other.include]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.other.include"
+    },
+    {
+      "id": "model__output_multiple_regressors",
+      "name": "model.output_multiple_regressors",
+      "value-key": "[model.output_multiple_regressors]",
+      "default-value": "multiple_regressors.txt",
+      "type": "String",
+      "description": "name of output file for usage in SPM multiple_regressors",
+      "optional": true,
+      "command-line-flag": "model.output_multiple_regressors"
+    },
+    {
+      "id": "model__output_physio",
+      "name": "model.output_physio",
+      "value-key": "[model.output_physio]",
+      "default-value": "physio.mat",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "model.output_physio"
+    },
+    {
+      "id": "model__retroicor__include",
+      "name": "model.retroicor.include",
+      "value-key": "[model.retroicor.include]",
+      "default-value": "Yes",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.retroicor.include"
+    },
+    {
+      "id": "model__retroicor__order__c",
+      "name": "model.retroicor.order.c",
+      "value-key": "[model.retroicor.order.c]",
+      "default-value": 3,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.c"
+    },
+    {
+      "id": "model__retroicor__order__cr",
+      "name": "model.retroicor.order.cr",
+      "value-key": "[model.retroicor.order.cr]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.cr"
+    },
+    {
+      "id": "model__retroicor__order__r",
+      "name": "model.retroicor.order.r",
+      "value-key": "[model.retroicor.order.r]",
+      "default-value": 4,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.r"
+    },
+    {
+      "id": "model__rvt__delays",
+      "name": "model.rvt.delays",
+      "value-key": "[model.rvt.delays]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "model.rvt.delays"
+    },
+    {
+      "id": "model__rvt__include",
+      "name": "model.rvt.include",
+      "value-key": "[model.rvt.include]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "model.rvt.include"
+    },
+    {
+      "id": "ons_secs__c_scaling",
+      "name": "ons_secs.c_scaling",
+      "value-key": "[ons_secs.c_scaling]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "ons_secs.c_scaling"
+    },
+    {
+      "id": "ons_secs__r_scaling",
+      "name": "ons_secs.r_scaling",
+      "value-key": "[ons_secs.r_scaling]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "ons_secs.r_scaling"
+    },
+    {
+      "id": "preproc__cardiac__filter__passband",
+      "name": "preproc.cardiac.filter.passband",
+      "value-key": "[preproc.cardiac.filter.passband]",
+      "default-value": [
+        0.3,
+        9
+      ],
+      "type": "Number",
+      "description": "interval",
+      "optional": true,
+      "list": true,
+      "list-separator": ",",
+      "command-line-flag": "preproc.cardiac.filter.passband"
+    },
+    {
+      "id": "preproc__cardiac__filter__type",
+      "name": "preproc.cardiac.filter.type",
+      "value-key": "[preproc.cardiac.filter.type]",
+      "default-value": "butter",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "butter",
+        "cheby2"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.filter.type"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__file",
+      "name": "preproc.cardiac.initial_cpulse_select.file",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.file]",
+      "default-value": "initial_cpulse_kRpeakfile.mat",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.file"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
+      "name": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm]",
+      "default-value": 90,
+      "type": "Number",
+      "description": "Integer",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__method",
+      "name": "preproc.cardiac.initial_cpulse_select.method",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.method]",
+      "default-value": "load_from_logfile",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "auto_matched",
+        "load_from_logfile",
+        "manual",
+        "load"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.method"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__min",
+      "name": "preproc.cardiac.initial_cpulse_select.min",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.min]",
+      "default-value": 0.4,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.min"
+    },
+    {
+      "id": "preproc__cardiac__modality",
+      "name": "preproc.cardiac.modality",
+      "value-key": "[preproc.cardiac.modality]",
+      "default-value": "ECG",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "ecg_wifi",
+        "ECG",
+        "ECG_raw",
+        "OXY",
+        "PPU"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.modality"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__lower_thresh",
+      "name": "preproc.cardiac.posthoc_cpulse_select.lower_thresh",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.lower_thresh]",
+      "default-value": 60,
+      "type": "Number",
+      "description": "Integer",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.lower_thresh"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__method",
+      "name": "preproc.cardiac.posthoc_cpulse_select.method",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.method]",
+      "default-value": "off",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "off",
+        "manual",
+        "load"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.method"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__percentile",
+      "name": "preproc.cardiac.posthoc_cpulse_select.percentile",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
+      "default-value": 80,
+      "type": "Number",
+      "description": "Integer",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.percentile"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__upper_thresh",
+      "name": "preproc.cardiac.posthoc_cpulse_select.upper_thresh",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.upper_thresh]",
+      "default-value": 60,
+      "type": "Number",
+      "description": "Integer",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.upper_thresh"
+    },
+    {
+      "id": "scan_timing__sqpar__Ndummies",
+      "name": "scan_timing.sqpar.Ndummies",
+      "value-key": "[scan_timing.sqpar.Ndummies]",
+      "default-value": 3,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.Ndummies"
+    },
+    {
+      "id": "scan_timing__sqpar__Nscans",
+      "name": "scan_timing.sqpar.Nscans",
+      "value-key": "[scan_timing.sqpar.Nscans]",
+      "default-value": 495,
+      "type": "Number",
+      "description": "Integer",
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.Nscans"
+    },
+    {
+      "id": "scan_timing__sqpar__Nslices",
+      "name": "scan_timing.sqpar.Nslices",
+      "value-key": "[scan_timing.sqpar.Nslices]",
+      "default-value": 37,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.Nslices"
+    },
+    {
+      "id": "scan_timing__sqpar__onset_slice",
+      "name": "scan_timing.sqpar.onset_slice",
+      "value-key": "[scan_timing.sqpar.onset_slice]",
+      "default-value": 19,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.onset_slice"
+    },
+    {
+      "id": "scan_timing__sqpar__TR",
+      "name": "scan_timing.sqpar.TR",
+      "value-key": "[scan_timing.sqpar.TR]",
+      "default-value": 2.5,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.TR"
+    },
+    {
+      "id": "scan_timing__sync__grad_direction",
+      "name": "scan_timing.sync.grad_direction",
+      "value-key": "[scan_timing.sync.grad_direction]",
+      "default-value": "y",
+      "type": "String",
+      "description": "String",
+      "value-choices": [
+        "x",
+        "y",
+        "z"
+      ],
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.grad_direction"
+    },
+    {
+      "id": "scan_timing__sync__method",
+      "name": "scan_timing.sync.method",
+      "value-key": "[scan_timing.sync.method]",
+      "default-value": "gradient_log",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.method"
+    },
+    {
+      "id": "scan_timing__sync__slice",
+      "name": "scan_timing.sync.slice",
+      "value-key": "[scan_timing.sync.slice]",
+      "default-value": 0.45,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.slice"
+    },
+    {
+      "id": "scan_timing__sync__zero",
+      "name": "scan_timing.sync.zero",
+      "value-key": "[scan_timing.sync.zero]",
+      "default-value": 0.4,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.zero"
+    },
+    {
+      "id": "verbose__close_figs",
+      "name": "verbose.close_figs",
+      "value-key": "[verbose.close_figs]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "verbose.close_figs"
+    },
+    {
+      "id": "verbose__fig_output_file",
+      "name": "verbose.fig_output_file",
+      "value-key": "[verbose.fig_output_file]",
+      "default-value": "PhysIO_output.fig",
+      "type": "String",
+      "description": "String",
+      "optional": true,
+      "command-line-flag": "verbose.fig_output_file"
+    },
+    {
+      "id": "verbose__level",
+      "name": "verbose.level",
+      "value-key": "[verbose.level]",
+      "default-value": 2,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "verbose.level"
+    },
+    {
+      "id": "verbose__save_figs",
+      "name": "verbose.save_figs",
+      "value-key": "[verbose.save_figs]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [
+        "Yes",
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "verbose.save_figs"
+    },
+    {
+      "id": "verbose__show_figs",
+      "name": "verbose.show_figs",
+      "value-key": "[verbose.show_figs]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [        
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "verbose.show_figs"
+    },
+    {
+      "id": "verbose__use_tabs",
+      "name": "verbose.use_tabs",
+      "value-key": "[verbose.use_tabs]",
+      "default-value": "No",
+      "type": "String",
+      "description": "bool",
+      "value-choices": [      
+        "No"
+      ],
+      "optional": true,
+      "command-line-flag": "verbose.use_tabs"
+    }
+  ],
+  "schema-version": "0.5",
+  "output-files": [
+    {
+      "description": "A folder containing the output files and a copy of configs.",
+      "list": false,
+      "id": "output",
+      "value-key": "[OUTDIR]",
+      "optional": false,
+      "path-template": "[OUT][INDIR]",
+      "name": "Output folder"
+    }
+  ],
+  "tags": {
+    "domain": [
+      "neuroinformatics",
+      "fMRI",
+      "neuroimaging"
+    ]
+  },
+  "suggested-resources": {
+    "walltime-estimate": 3660
+  },
+  "custom": {
+    "cbrain:readonly-input-files": true
+  }
+}

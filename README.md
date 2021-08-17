@@ -12,6 +12,7 @@ fMRI(corrected) = fMRI(raw) - Betas * multiple_regressors
 The output is the multiple_regressors.txt and diagnostic plots from PhysIO, as well as (if 'correct' is set to 'yes') a corrected fMRI image and a pct_var_reduced.nii image which shows the percent variance reduced by the regressors per each voxel. This can be visualized in e.g. SPM.
 
 For example...
+
 ![for example...](spin001_resting_post1_var_reduced.png)
 
 # CBRAIN integration
