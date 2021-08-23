@@ -39,63 +39,12 @@
       "name": "Output folder prefix"
     },
     {
-      "id": "log_files__align_scan",
-      "name": "log_files.align_scan",
-      "value-key": "[log_files.align_scan]",
-      "default-value": "last",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "last",
-        "first"
-      ],
-      "optional": true,
-      "command-line-flag": "log_files.align_scan"
-    },
-    {
-      "id": "log_files__cardiac",
-      "name": "log_files.cardiac",
-      "value-key": "[log_files.cardiac]",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "log_files.cardiac"
-    },
-    {
-      "id": "log_files__relative_start_acquisition",
-      "name": "log_files.relative_start_acquisition",
-      "value-key": "[log_files.relative_start_acquisition]",
-      "default-value": 0,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "log_files.relative_start_acquisition"
-    },
-    {
-      "id": "log_files__respiration",
-      "name": "log_files.respiration",
-      "value-key": "[log_files.respiration]",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "log_files.respiration"
-    },
-    {
-      "id": "log_files__scan_timing",
-      "name": "log_files.scan_timing",
-      "value-key": "[log_files.scan_timing]",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "log_files.scan_timing"
-    },
-    {
       "id": "log_files__vendor",
-      "name": "log_files.vendor",
+      "name": "Logfile Vendor",
       "value-key": "[log_files.vendor]",
       "default-value": "Philips",
       "type": "String",
-      "description": "String",
+      "description": "Vendor name depending on your MRI scanner/Physiological recording system.",
       "value-choices": [
         "BIDS",
         "Biopac_Txt",
@@ -108,8 +57,234 @@
         "Siemens_Tics",
         "Siemens_HCP"
       ],
-      "optional": true,
+      "optional": false,
       "command-line-flag": "log_files.vendor"
+    },
+    {
+      "id": "log_files__cardiac",
+      "name": "Cardiac Logfile",
+      "value-key": "[log_files.cardiac]",
+      "type": "String",
+      "description": "Logfile with cardiac, i.e. ECG/PPU (pulse oximetry) data.\nSelect 0 files if only respiratory data is available.\nFor Philips and BIDS, same as respiratory logfile.",
+      "optional": true,
+      "command-line-flag": "log_files.cardiac"
+    },
+    {
+      "id": "log_files__respiration",
+      "name": "Respiration Logfile",
+      "value-key": "[log_files.respiration]",
+      "type": "String",
+      "description": "Logfile with respiratory, i.e. breathing belt amplitude data.",
+      "optional": true,
+      "command-line-flag": "log_files.respiration"
+    },
+    {
+      "id": "log_files__scan_timing",
+      "name": "Scan Timing",
+      "value-key": "[log_files.scan_timing]",
+      "type": "String",
+      "description": "Additional file for relative timing information between logfiles and MRI scans.",
+      "optional": true,
+      "command-line-flag": "log_files.scan_timing"
+    },
+    {
+      "id": "log_files__sampling_interval",
+      "name": "Sampling Interval",
+      "value-key": "[log_files.sampling_interval]",
+      "type": "String",
+      "description": "Sampling interval of phys log files (in seconds).",
+      "optional": true,
+      "command-line-flag": "log_files.sampling_interval"
+    },
+    {
+      "id": "log_files__relative_start_acquisition",
+      "name": "Relative Start Acquisition",
+      "value-key": "[log_files.relative_start_acquisition]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "Time (in seconds) when the 1st scan (or, if existing, dummy) started, relative to the start of the logfile recording:\n[] (empty) to read from explicit acquisition timing info\n0 if simultaneous start\n10, if 1st scan starts 10 seconds AFTER physiological recording\n-20, if first scan started 20 seconds BEFORE phys recording",
+      "optional": true,
+      "command-line-flag": "log_files.relative_start_acquisition"
+    },
+    {
+      "id": "log_files__align_scan",
+      "name": "Align Scan",
+      "value-key": "[log_files.align_scan]",
+      "default-value": "last",
+      "type": "String",
+      "description": "Determines which scan shall be aligned to which part of the logfile.\nTypically, aligning the last scan to the end of the logfile is beneficial, since the start of the logfile and scans might be shifted due to pre-scans.",
+      "value-choices": [
+        "last",
+        "first"
+      ],
+      "optional": true,
+      "command-line-flag": "log_files.align_scan"
+    },
+    {
+      "id": "scan_timing__sqpar__Nslices",
+      "name": "Number of Slices",
+      "value-key": "[scan_timing.sqpar.Nslices]",
+      "type": "Number",
+      "description": "Number of slices in one volume.",
+      "integer": true,
+      "optional": false,
+      "command-line-flag": "scan_timing.sqpar.Nslices"
+    },
+    {
+      "id": "scan_timing__sqpar__NslicesPerbeat",
+      "name": "Number of Slices Per Beat",
+      "value-key": "[scan_timing.sqpar.NslicesPerBeat]",
+      "type": "Number",
+      "description": "Only for triggered (gated) sequences:\nNumber of slices acquired per heartbeat",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.NslicesPerBeat"
+    },
+    {
+      "id": "scan_timing__sqpar__TR",
+      "name": "TR",
+      "value-key": "[scan_timing.sqpar.TR]",
+      "type": "Number",
+      "description": "Repetition time (in seconds) between consecutive image volumes.",
+      "optional": false,
+      "command-line-flag": "scan_timing.sqpar.TR"
+    },
+    {
+      "id": "scan_timing__sqpar__Ndummies",
+      "name": "Number of Dummies",
+      "value-key": "[scan_timing.sqpar.Ndummies]",
+      "type": "Number",
+      "description": "Number of dummies that were acquired (but will not show up in design matrix).",
+      "integer": true,
+      "optional": false,
+      "command-line-flag": "scan_timing.sqpar.Ndummies"
+    },
+    {
+      "id": "scan_timing__sqpar__Nscans",
+      "name": "Number of scans",
+      "value-key": "[scan_timing.sqpar.Nscans]",
+      "type": "Number",
+      "description": "Number of scans (volumes) in design matrix.",
+      "optional": false,
+      "command-line-flag": "scan_timing.sqpar.Nscans"
+    },
+    {
+      "id": "scan_timing__sqpar__onset_slice",
+      "name": "Onset Slice",
+      "value-key": "[scan_timing.sqpar.onset_slice]",
+      "type": "Number",
+      "description": "Slice to which regressors are temporally aligned.\nTypically the slice where your most important activation is expected.",
+      "integer": true,
+      "optional": false,
+      "command-line-flag": "scan_timing.sqpar.onset_slice"
+    },
+    {
+      "id": "scan_timing__sqpar__time_slice_to_slice",
+      "name": "Time Slice-to-Slice",
+      "value-key": "[scan_timing.sqpar.time_slice_to_slice]",
+      "type": "Number",
+      "description": "Duration between acquisition of two different slices.\nIf empty, set to default value (TR/Nslices).",
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.time_slice_to_slice"
+    },
+    {
+      "id": "scan_timing__Nprep",
+      "name": "Number of Preparation Pulses",
+      "value-key": "[scan_timing.sqpar.Nprep]",
+      "type": "Number",
+      "description": "Count of preparation pulses BEFORE 1st dummy scan.\nOnly important if Align Scan = 'first', since then preparation pulses and dummy triggers are counted and discarded as first scan onset.",
+      "optional": true,
+      "command-line-flag": "scan_timing.sqpar.Nprep"
+    },
+    {
+      "id": "scan_timing__sync__method",
+      "name": "Sync Method",
+      "value-key": "[scan_timing.sync.method]",
+      "default-value": "nominal",
+      "type": "String",
+      "description": "Determines scan timing from nominal scan parameters or logged gradient time courses.",
+      "value-choices": [
+        "nominal",
+        "gradient_log",
+        "gradient_log_auto",
+        "scan_timing_log"
+      ],
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.method"
+    },
+    {
+      "id": "preproc__cardiac__modality",
+      "name": "Cardiac Modality",
+      "value-key": "[preproc.cardiac.modality]",
+      "default-value": "ECG",
+      "type": "String",
+      "description": "Shall ECG or PPU data be read from logfiles?",
+      "value-choices": [
+        "ECG",
+        "ECG_raw",
+        "OXY",
+        "PPU"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.modality"
+    },
+    {
+      "id": "preproc__cardiac__filter__include",
+      "name": "Filter Raw Cardiac Time Series",
+      "value-key": "[preproc.cardiac.filter.include]",
+      "default-value": "no",
+      "type": "String",
+      "description": "Filter properties for bandpass-filtering of cardiac signal before peak detection, phase extraction, and other physiological traces.",
+      "value-choices": [
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__method",
+      "name": "Cardiac Pulse Selection Method",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.method]",
+      "default-value": "auto_matched",
+      "type": "String",
+      "description": "The initial cardiac pulse selection structure: Determines how the majority of cardiac pulses is detected in a first pass.",
+      "value-choices": [
+        "auto_matched",
+        "load_from_logfile",
+        "manual",
+        "load"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.method"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__min",
+      "name": "Cardiac Pulse Selection Minimum",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.min]",
+      "default-value": 0.4,
+      "type": "Number",
+      "description": "Minimum threshold for peak height in z-scored cardiac waveform to find pulse events.\nNOTE: For ECG, might need increase (e.g., 2.0), because of local maximum of T wave after QRS complex.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.min"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__file",
+      "name": "Cardiac Pulse Selection File",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.file]",
+      "default-value": "initial_cpulse_kRpeakfile.mat",
+      "type": "String",
+      "description": "Filename where cardiac pulses are saved after manual picking.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.file"
+    },
+    {
+      "id": "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
+      "name": "Maximum Heart Rate (BPM)",
+      "value-key": "[preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm]",
+      "default-value": 90,
+      "type": "Number",
+      "description": "Maximum expected heart rate in beats per minute.\nThis only needs to be a rough guess and should be changed for specific populations.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm"
     },
     {
       "id": "model__censor_unreliable_recording_intervals",
@@ -420,241 +595,6 @@
       "command-line-flag": "ons_secs.r_scaling"
     },
     {
-      "id": "preproc__cardiac__filter__passband",
-      "name": "preproc.cardiac.filter.passband",
-      "value-key": "[preproc.cardiac.filter.passband]",
-      "default-value": [
-        0.3,
-        9
-      ],
-      "type": "Number",
-      "description": "interval",
-      "optional": true,
-      "list": true,
-      "list-separator": ",",
-      "command-line-flag": "preproc.cardiac.filter.passband"
-    },
-    {
-      "id": "preproc__cardiac__filter__type",
-      "name": "preproc.cardiac.filter.type",
-      "value-key": "[preproc.cardiac.filter.type]",
-      "default-value": "butter",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "butter",
-        "cheby2"
-      ],
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.filter.type"
-    },
-    {
-      "id": "preproc__cardiac__initial_cpulse_select__file",
-      "name": "preproc.cardiac.initial_cpulse_select.file",
-      "value-key": "[preproc.cardiac.initial_cpulse_select.file]",
-      "default-value": "initial_cpulse_kRpeakfile.mat",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.initial_cpulse_select.file"
-    },
-    {
-      "id": "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
-      "name": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm",
-      "value-key": "[preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm]",
-      "default-value": 90,
-      "type": "Number",
-      "description": "Integer",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm"
-    },
-    {
-      "id": "preproc__cardiac__initial_cpulse_select__method",
-      "name": "preproc.cardiac.initial_cpulse_select.method",
-      "value-key": "[preproc.cardiac.initial_cpulse_select.method]",
-      "default-value": "load_from_logfile",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "auto_matched",
-        "load_from_logfile",
-        "manual",
-        "load"
-      ],
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.initial_cpulse_select.method"
-    },
-    {
-      "id": "preproc__cardiac__initial_cpulse_select__min",
-      "name": "preproc.cardiac.initial_cpulse_select.min",
-      "value-key": "[preproc.cardiac.initial_cpulse_select.min]",
-      "default-value": 0.4,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.initial_cpulse_select.min"
-    },
-    {
-      "id": "preproc__cardiac__modality",
-      "name": "preproc.cardiac.modality",
-      "value-key": "[preproc.cardiac.modality]",
-      "default-value": "ECG",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "ecg_wifi",
-        "ECG",
-        "ECG_raw",
-        "OXY",
-        "PPU"
-      ],
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.modality"
-    },
-    {
-      "id": "preproc__cardiac__posthoc_cpulse_select__lower_thresh",
-      "name": "preproc.cardiac.posthoc_cpulse_select.lower_thresh",
-      "value-key": "[preproc.cardiac.posthoc_cpulse_select.lower_thresh]",
-      "default-value": 60,
-      "type": "Number",
-      "description": "Integer",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.lower_thresh"
-    },
-    {
-      "id": "preproc__cardiac__posthoc_cpulse_select__method",
-      "name": "preproc.cardiac.posthoc_cpulse_select.method",
-      "value-key": "[preproc.cardiac.posthoc_cpulse_select.method]",
-      "default-value": "off",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "off",
-        "manual",
-        "load"
-      ],
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.method"
-    },
-    {
-      "id": "preproc__cardiac__posthoc_cpulse_select__percentile",
-      "name": "preproc.cardiac.posthoc_cpulse_select.percentile",
-      "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
-      "default-value": 80,
-      "type": "Number",
-      "description": "Integer",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.percentile"
-    },
-    {
-      "id": "preproc__cardiac__posthoc_cpulse_select__upper_thresh",
-      "name": "preproc.cardiac.posthoc_cpulse_select.upper_thresh",
-      "value-key": "[preproc.cardiac.posthoc_cpulse_select.upper_thresh]",
-      "default-value": 60,
-      "type": "Number",
-      "description": "Integer",
-      "optional": true,
-      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.upper_thresh"
-    },
-    {
-      "id": "scan_timing__sqpar__Ndummies",
-      "name": "scan_timing.sqpar.Ndummies",
-      "value-key": "[scan_timing.sqpar.Ndummies]",
-      "default-value": 3,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "scan_timing.sqpar.Ndummies"
-    },
-    {
-      "id": "scan_timing__sqpar__Nscans",
-      "name": "scan_timing.sqpar.Nscans",
-      "value-key": "[scan_timing.sqpar.Nscans]",
-      "default-value": 495,
-      "type": "Number",
-      "description": "Integer",
-      "optional": true,
-      "command-line-flag": "scan_timing.sqpar.Nscans"
-    },
-    {
-      "id": "scan_timing__sqpar__Nslices",
-      "name": "scan_timing.sqpar.Nslices",
-      "value-key": "[scan_timing.sqpar.Nslices]",
-      "default-value": 37,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "scan_timing.sqpar.Nslices"
-    },
-    {
-      "id": "scan_timing__sqpar__onset_slice",
-      "name": "scan_timing.sqpar.onset_slice",
-      "value-key": "[scan_timing.sqpar.onset_slice]",
-      "default-value": 19,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "scan_timing.sqpar.onset_slice"
-    },
-    {
-      "id": "scan_timing__sqpar__TR",
-      "name": "scan_timing.sqpar.TR",
-      "value-key": "[scan_timing.sqpar.TR]",
-      "default-value": 2.5,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "scan_timing.sqpar.TR"
-    },
-    {
-      "id": "scan_timing__sync__grad_direction",
-      "name": "scan_timing.sync.grad_direction",
-      "value-key": "[scan_timing.sync.grad_direction]",
-      "default-value": "y",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "x",
-        "y",
-        "z"
-      ],
-      "optional": true,
-      "command-line-flag": "scan_timing.sync.grad_direction"
-    },
-    {
-      "id": "scan_timing__sync__method",
-      "name": "scan_timing.sync.method",
-      "value-key": "[scan_timing.sync.method]",
-      "default-value": "gradient_log",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "scan_timing.sync.method"
-    },
-    {
-      "id": "scan_timing__sync__slice",
-      "name": "scan_timing.sync.slice",
-      "value-key": "[scan_timing.sync.slice]",
-      "default-value": 0.45,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "scan_timing.sync.slice"
-    },
-    {
-      "id": "scan_timing__sync__zero",
-      "name": "scan_timing.sync.zero",
-      "value-key": "[scan_timing.sync.zero]",
-      "default-value": 0.4,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "scan_timing.sync.zero"
-    },
-    {
       "id": "verbose__close_figs",
       "name": "verbose.close_figs",
       "value-key": "[verbose.close_figs]",
@@ -710,7 +650,7 @@
       "default-value": "No",
       "type": "String",
       "description": "bool",
-      "value-choices": [        
+      "value-choices": [
         "No"
       ],
       "optional": true,
@@ -723,7 +663,7 @@
       "default-value": "No",
       "type": "String",
       "description": "bool",
-      "value-choices": [      
+      "value-choices": [
         "No"
       ],
       "optional": true,
@@ -731,6 +671,74 @@
     }
   ],
   "schema-version": "0.5",
+  "groups": [
+    {
+      "description": "Specify log files where peripheral data was stored, and their properties.",
+      "id": "log_files_group",
+      "members": [
+        "log_files__vendor",
+        "log_files__log_cardiac",
+        "log_files__log_respiration",
+        "log_files__log_scan_timing",
+        "log_files__sampling_interval",
+        "log_files__relative_start_aquisition",
+        "log_files__align_scan"
+      ],
+      "name": "Log File Parameters"
+    },
+    {
+      "description": "Parameters for scan timing and synchronization.",
+      "id": "scan_timing_group",
+      "members": [
+        "scan_timing__sqpar__Nslices",
+        "scan_timing__sqpar__NslicesPerBeat",
+        "scan_timing__sqpar__TR",
+        "scan_timing__sqpar__Ndummies",
+        "scan_timing__sqpar__Nscans",
+        "scan_timing__sqpar__onset_slice",
+        "scan_timing__sqpar__time_slice_to_slice",
+        "scan_timing__sqpar__Nprep",
+        "scan_timing__sync__method"
+      ],
+      "name": "Scan Timing Parameters"
+    },
+    {
+      "description": "Thresholding parameters for de-noising and timing",
+      "id": "preproc_group",
+      "members": [
+        "preproc__cardiac__modality",
+        "preproc__cardiac__filter__include",
+        "preproc__cardiac__initial_cpulse_select__method",
+        "preproc__cardiac__initial_cpulse_select__min",
+        "preproc__cardiac__initial_cpulse_select__file",
+        "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
+        "preproc__cposthoc_cpulse_select__method"
+      ],
+      "name": "Preprocessing Paramaters"
+    },
+    {
+      "description": "Physiological model to be estimated and included in GLM as multiple_regressors.txt.",
+      "id": "model_group",
+      "memebers": [
+        "output_multiple_regressors",
+        "output_physio",
+        "orthogonalise",
+        "censor_unreliable_recording_intervals",
+        "retroicor__include",
+        "retroicor__order__c",
+        "retroicor__order__r",
+        "retroicor__order__cr",
+        "rvt__include",
+        "hrv__include",
+        "noise_rois__include",
+        "movement__include",
+        "other__include",
+        "verbose__level",
+        "verbose__fig_output_file"
+      ],
+      "name": "Model Parameters"
+    }
+  ],
   "output-files": [
     {
       "description": "A folder containing the output files and a copy of configs.",
