@@ -1,1 +1,8 @@
 code/*
+input/*
+output/*
+results/*
+physio_cli_fmri/*
+*.prj
+compiled_tool/*
+imagetestdocker/*
