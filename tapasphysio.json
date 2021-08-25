@@ -17,13 +17,13 @@
     },
     {
       "description": "Runs Correct noise",
-      "default-value": "No",
+      "default-value": "no",
       "value-key": "[correct]",
       "command-line-flag": "correct",
       "optional": false,
       "list": false,
       "value-choices": [
-        "No"
+        "no"
       ],
       "type": "String",
       "id": "correct",
@@ -79,24 +79,6 @@
       "command-line-flag": "log_files.respiration"
     },
     {
-      "id": "log_files__scan_timing",
-      "name": "Scan Timing",
-      "value-key": "[log_files.scan_timing]",
-      "type": "String",
-      "description": "Additional file for relative timing information between logfiles and MRI scans.",
-      "optional": true,
-      "command-line-flag": "log_files.scan_timing"
-    },
-    {
-      "id": "log_files__sampling_interval",
-      "name": "Sampling Interval",
-      "value-key": "[log_files.sampling_interval]",
-      "type": "String",
-      "description": "Sampling interval of phys log files (in seconds).",
-      "optional": true,
-      "command-line-flag": "log_files.sampling_interval"
-    },
-    {
       "id": "log_files__relative_start_acquisition",
       "name": "Relative Start Acquisition",
       "value-key": "[log_files.relative_start_acquisition]",
@@ -119,6 +101,24 @@
       ],
       "optional": true,
       "command-line-flag": "log_files.align_scan"
+    },
+    {
+      "id": "log_files__scan_timing",
+      "name": "Scan Timing",
+      "value-key": "[log_files.scan_timing]",
+      "type": "String",
+      "description": "Additional file for relative timing information between logfiles and MRI scans.",
+      "optional": true,
+      "command-line-flag": "log_files.scan_timing"
+    },
+    {
+      "id": "log_files__sampling_interval",
+      "name": "Sampling Interval",
+      "value-key": "[log_files.sampling_interval]",
+      "type": "String",
+      "description": "Sampling interval of phys log files (in seconds).",
+      "optional": true,
+      "command-line-flag": "log_files.sampling_interval"
     },
     {
       "id": "scan_timing__sqpar__Nslices",
@@ -213,6 +213,61 @@
       "command-line-flag": "scan_timing.sync.method"
     },
     {
+      "id": "scan_timing__sync__grad_direction",
+      "name": "Gradient Direction",
+      "value-key": "[scan_timing.sync.grad_direction]",
+      "default-value": "y",
+      "type": "String",
+      "description": "Must choose x,y, or z.",
+      "value-choices": [
+        "x",
+        "y",
+        "z"
+      ],
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.grad_direction"
+    },
+    {
+      "id": "scan_timing__sync__zero",
+      "name": "Gradient Zero",
+      "value-key": "[scan_timing.sync.zero]",
+      "default-value": 0.5,
+      "type": "Number",
+      "description": "Gradient amplitude threshold below which values will be set to zero.",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.zero"
+    },
+    {
+      "id": "scan_timing__sync__slice",
+      "name": "Gradient Slice",
+      "value-key": "[scan_timing.sync.slice]",
+      "default-value": 0.6,
+      "type": "Number",
+      "description": "Gradient amplitude threshold for start of new slice.",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.slice"
+    },
+    {
+      "id": "scan_timing__sync__vol",
+      "name": "Gradient Volume",
+      "value-key": "[scan_timing.sync.vol]",
+      "default-value": null,
+      "type": "Number",
+      "description": "Gradient amplitude threshold for start of new volume.\nOptional parameter - can be used if volume start indicated by higher gradient amplitude.\nMutually exclusive with use of vol_spacing parameter.",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.slice"
+    },
+    {
+      "id": "scan_timing__sync__vol_spacing",
+      "name": "Gradient Volume Spacing",
+      "value-key": "[scan_timing.sync.vol_spacing]",
+      "default-value": null,
+      "type": "Number",
+      "description": "Gradient amplitude threshold for start of new volume.\nOptional parameter - can be used if volume start indicated by higher gradient amplitude.\nMutually exclusive with use of vol_spacing parameter.",
+      "optional": true,
+      "command-line-flag": "scan_timing.sync.slice"
+    },
+    {
       "id": "preproc__cardiac__modality",
       "name": "Cardiac Modality",
       "value-key": "[preproc.cardiac.modality]",
@@ -239,6 +294,50 @@
         "no",
         "yes"
       ]
+    },
+    {
+      "id": "preproc__cardiac__filter__type",
+      "name": "Filter Type",
+      "value-key": "[preproc.cardiac.filter.type]",
+      "default-value": "cheby2",
+      "type": "String",
+      "description": "Which infinite impulse response filter shall be used?\n'Chebychev Type II (cheby2)': Chebychev Type II filter, use for steep transition from start to stop band\n'Butterworth (butter)': Butterworth filter, standard filter with maximally flat passband (Infinite impulse response), but stronger ripples in transition band",
+      "value-choices": [
+        "butter",
+        "cheby2"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.filter.type"
+    },
+    {
+      "id": "preproc__cardiac__filter__passband",
+      "name": "Filter Passband",
+      "value-key": "[preproc.cardiac.filter.passband]",
+      "default-value": [
+        0.3,
+        9
+      ],
+      "type": "Number",
+      "description": "[f_min, f_max] frequency interval in Hz of all frequency that should pass the passband filter.\nIf empty, no filtering is performed.]",
+      "optional": true,
+      "list": true,
+      "list-separator": ",",
+      "command-line-flag": "preproc.cardiac.filter.passband"
+    },
+    {
+      "id": "preproc__cardiac__filter__passband",
+      "name": "Filter Stopband",
+      "value-key": "[preproc.cardiac.filter.passband]",
+      "default-value": [
+        0.3,
+        9
+      ],
+      "type": "Number",
+      "description": "[f_min, f_max] frequency interval in Hz of all frequencies, such that frequencies outside this band should definitely NOT pass the filter.\nNOTE: only relevant for 'cheby2' filter type.\nIf empty, and passband is empty, no fitlering is performed.\nIf empty, but passband exists, stopband interval is 10% increased passband interval.",
+      "optional": true,
+      "list": true,
+      "list-separator": ",",
+      "command-line-flag": "preproc.cardiac.filter.passband"
     },
     {
       "id": "preproc__cardiac__initial_cpulse_select__method",
@@ -272,7 +371,7 @@
       "value-key": "[preproc.cardiac.initial_cpulse_select.file]",
       "default-value": "initial_cpulse_kRpeakfile.mat",
       "type": "String",
-      "description": "Filename where cardiac pulses are saved after manual picking.",
+      "description": "File containing reference ECG-peak (variable kRpeak),\nUsed for method 'manual' or 'load'.\nIf method == 'manual', this file is saved after picking the QRS-wave such that results are reproducible.",
       "optional": true,
       "command-line-flag": "preproc.cardiac.initial_cpulse_select.file"
     },
@@ -287,42 +386,281 @@
       "command-line-flag": "preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm"
     },
     {
-      "id": "model__censor_unreliable_recording_intervals",
-      "name": "model.censor_unreliable_recording_intervals",
-      "value-key": "[model.censor_unreliable_recording_intervals]",
-      "default-value": "No",
+      "id": "preproc__cardiac__posthoc_cpulse_select__method",
+      "name": "Post-Hoc Selection of Cardiac Pulses",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.method]",
+      "default-value": "off",
       "type": "String",
-      "description": "bool",
+      "description": "The post-hoc cardiac pulse selection structure: if only few (<20) cardiac pulses are missing in a session due to bad signal quality, a manual selection after visual inspection is possible using the following parameters. The results are saved for reproducibility.",
       "value-choices": [
-        "Yes",
-        "No"
+        "off",
+        "manual",
+        "load"
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.method"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__file",
+      "name": "Post-Hoc Selection File",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
+      "default-value": "",
+      "type": "String",
+      "description": "Filename where cardiac pulses are saved after manual picking.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.percentile"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__percentile",
+      "name": "Post-Hoc Selection Percentile",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
+      "default-value": 80,
+      "type": "Number",
+      "description": "Percentile of beat-2-beat interval histogram that constitutes the average heart beat duration in the session.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.percentile"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__upper_thresh",
+      "name": "Post-Hoc Selection Upper Threshold",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.upper_thresh]",
+      "default-value": 60,
+      "type": "Number",
+      "description": "Minimum exceedance (in %) from average heartbeat duration to be classified as missing heartbeat.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.upper_thresh"
+    },
+    {
+      "id": "preproc__cardiac__posthoc_cpulse_select__lower_thresh",
+      "name": "Post-Hoc Selection Lower Threshold",
+      "value-key": "[preproc.cardiac.posthoc_cpulse_select.lower_thresh]",
+      "default-value": 60,
+      "type": "Number",
+      "description": "Minimum reduction (in %) from average heartbeat duration to be classified an abundant heartbeat.",
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.lower_thresh"
+    },
+    {
+      "id": "model__output_multiple_regressors",
+      "name": "Output File for Multiple Regressors",
+      "value-key": "[model.output_multiple_regressors]",
+      "default-value": "multiple_regressors.txt",
+      "type": "String",
+      "description": "Output file for physiological regressors.\nChoose file name with extension:\n.txt for ASCII files with 1 regressor per column\n.mat for MATLAB variable file",
+      "optional": true,
+      "command-line-flag": "model.output_multiple_regressors"
+    },
+    {
+      "id": "model__output_physio",
+      "name": "Output Physio Structure",
+      "value-key": "[model.output_physio]",
+      "default-value": "physio.mat",
+      "type": "String",
+      "description": "Output file for physio-structure with extracted physiological time series, detected peak and created regressors.\nChoose mat-file name; structure will be saved as variable physio in there.",
+      "optional": true,
+      "command-line-flag": "model.output_physio"
+    },
+    {
+      "id": "model__orthogonalise",
+      "name": "Orthogonalise",
+      "value-key": "[model.orthogonalise]",
+      "default-value": "none",
+      "type": "String",
+      "description": "Orthogonalise physiological regressors with respect to each other.\nNOTE: This is only recommended for triggered/gated acquisition sequences.",
+      "value-choices": [
+        "none",
+        "cardiac",
+        "resp",
+        "mult",
+        "all",
+        "RETROICOR",
+        "HRV",
+        "RVT",
+        "movement",
+        "noise_rois"
+      ],
+      "optional": true,
+      "command-line-flag": "model.orthogonalise"
+    },
+    {
+      "id": "model__censor_unreliable_recording_intervals",
+      "name": "Censor Unreliable Recording Intervals",
+      "value-key": "[model.censor_unreliable_recording_intervals]",
+      "default-value": "no",
+      "type": "String",
+      "description": "If parts of the physiological recording intervals are unreliable (e.g., constant due to belt detachment) the corresponding parts of recording-dependent RETROICOR regressors are set to 0 in the final multiple regressors file.",
+      "value-choices": [
+        "yes",
+        "no"
       ],
       "optional": true,
       "command-line-flag": "model.censor_unreliable_recording_intervals"
     },
     {
+      "id": "model__retroicor__include",
+      "name": "Include RETROICOR",
+      "value-key": "[model.retroicor.include]",
+      "default-value": "yes",
+      "type": "String",
+      "description": "Include RETROICOR Model, as described in Glover et al., MRM 2000.",
+      "value-choices": [
+        "yes",
+        "no"
+      ],
+      "optional": true,
+      "command-line-flag": "model.retroicor.include"
+    },
+    {
+      "id": "model__retroicor__order__c",
+      "name": "RETROICOR Cardiac Order",
+      "value-key": "[model.retroicor.order.c]",
+      "default-value": 3,
+      "type": "Number",
+      "description": "Order of Fourier expansion for cardiac phase.\nEquals 1/2 number of cardiac regressors, since sine and cosine terms are computed.",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.c"
+    },
+    {
+      "id": "model__retroicor__order__r",
+      "name": "RETROICOR Respiratory Order",
+      "value-key": "[model.retroicor.order.r]",
+      "default-value": 4,
+      "type": "Number",
+      "description": "Order of Fourier expansion for respiratory phase.\nEquals 1/2 number of respiratory regressors, since sine and cosine terms are computed.",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.r"
+    },
+    {
+      "id": "model__retroicor__order__cr",
+      "name": "RETROICOR Cardiac X Respiratory Order",
+      "value-key": "[model.retroicor.order.cr]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Order of Fourier expansion for interaction of cardiac and respiratory phase.\nEquals 1/4 number of interaction regressors, since since and cosine terms are computed and multiplied.",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.retroicor.order.cr"
+    },
+    {
+      "id": "model__rvt__include",
+      "name": "Include Respiratory Volume per Time (RVT)",
+      "value-key": "[model.rvt.include]",
+      "default-value": "no",
+      "type": "String",
+      "description": "Respiratory Volume per Time (RVT) Model, as described in Birn et al. NeuroImage 40, 644-654.",
+      "value-choices": [
+        "yes",
+        "no"
+      ],
+      "optional": true,
+      "command-line-flag": "model.rvt.include"
+    },
+    {
+      "id": "model__rvt__delays",
+      "name": "RVT Delays",
+      "value-key": "[model.rvt.delays]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "Delays (in seconds) by which respiratory response function is shifted with respect to RVT regressor before convolution.",
+      "optional": true,
+      "command-line-flag": "model.rvt.delays"
+    },
+    {
+      "id": "model__hrv__include",
+      "name": "Include Heart Rate Variability (HRV)",
+      "value-key": "[model.hrv.include]",
+      "default-value": "no",
+      "type": "String",
+      "description": "Heart Rate Variability (HRV) Model, as described in Chang et al., NeuroImage 44, 857-869.",
+      "value-choices": [
+        "yes",
+        "no"
+      ],
+      "optional": true,
+      "command-line-flag": "model.hrv.include"
+    },
+    {
       "id": "model__hrv__delays",
-      "name": "model.hrv.delays",
+      "name": "HRV Delays",
       "value-key": "[model.hrv.delays]",
       "default-value": 0,
       "type": "Number",
-      "description": "real",
+      "description": "Delays (in seconds) by which respiratory response function is shifted with respect to HRV regressor before convolution.",
       "optional": true,
       "command-line-flag": "model.hrv.delays"
     },
     {
-      "id": "model__hrv__include",
-      "name": "model.hrv.include",
-      "value-key": "[model.hrv.include]",
-      "default-value": "No",
+      "id": "model__noise_rois__include",
+      "name": "Include Noise ROIs",
+      "value-key": "[model.noise_rois.include]",
+      "default-value": "no",
       "type": "String",
-      "description": "bool",
+      "description": "Noise ROIs model (Principal components of anatomical regions), similar to aCompCor, Hehzadi et al. 2007.",
       "value-choices": [
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "optional": true,
-      "command-line-flag": "model.hrv.include"
+      "command-line-flag": "model.noise_rois.include"
+    },
+    {
+      "id": "model__noise_rois__fmri_files",
+      "name": "Include Noise ROIs",
+      "value-key": "[model.noise_rois.include]",
+      "default-value": "no",
+      "type": "String",
+      "description": "Noise ROIs model (Principal components of anatomical regions), similar to aCompCor, Hehzadi et al. 2007.",
+      "value-choices": [
+        "yes",
+        "no"
+      ],
+      "optional": true,
+      "command-line-flag": "model.noise_rois.include"
+    },
+    {
+      "id": "model__noise_rois__force_coregister",
+      "name": "model.noise_rois.force_coregister",
+      "value-key": "[model.noise_rois.force_coregister]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.force_coregister"
+    },
+    {
+      "id": "model__noise_rois__n_components",
+      "name": "model.noise_rois.n_components",
+      "value-key": "[model.noise_rois.n_components]",
+      "default-value": 1,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.n_components"
+    },
+    {
+      "id": "model__noise_rois__n_voxel_crop",
+      "name": "model.noise_rois.n_voxel_crop",
+      "value-key": "[model.noise_rois.n_voxel_crop]",
+      "default-value": 0,
+      "type": "Number",
+      "description": "Integer",
+      "integer": true,
+      "optional": true,
+      "command-line-flag": "model.noise_rois.n_voxel_crop"
+    },
+    {
+      "id": "model__noise_rois__thresholds",
+      "name": "model.noise_rois.thresholds",
+      "value-key": "[model.noise_rois.thresholds]",
+      "default-value": 0.9,
+      "type": "Number",
+      "description": "real",
+      "optional": true,
+      "command-line-flag": "model.noise_rois.thresholds"
     },
     {
       "id": "model__movement__censoring_method",
@@ -367,12 +705,12 @@
       "id": "model__movement__include",
       "name": "model.movement.include",
       "value-key": "[model.movement.include]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "optional": true,
       "command-line-flag": "model.movement.include"
@@ -389,188 +727,18 @@
       "command-line-flag": "model.movement.order"
     },
     {
-      "id": "model__noise_rois__force_coregister",
-      "name": "model.noise_rois.force_coregister",
-      "value-key": "[model.noise_rois.force_coregister]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.noise_rois.force_coregister"
-    },
-    {
-      "id": "model__noise_rois__include",
-      "name": "model.noise_rois.include",
-      "value-key": "[model.noise_rois.include]",
-      "default-value": "No",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "Yes",
-        "No"
-      ],
-      "optional": true,
-      "command-line-flag": "model.noise_rois.include"
-    },
-    {
-      "id": "model__noise_rois__n_components",
-      "name": "model.noise_rois.n_components",
-      "value-key": "[model.noise_rois.n_components]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.noise_rois.n_components"
-    },
-    {
-      "id": "model__noise_rois__n_voxel_crop",
-      "name": "model.noise_rois.n_voxel_crop",
-      "value-key": "[model.noise_rois.n_voxel_crop]",
-      "default-value": 0,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.noise_rois.n_voxel_crop"
-    },
-    {
-      "id": "model__noise_rois__thresholds",
-      "name": "model.noise_rois.thresholds",
-      "value-key": "[model.noise_rois.thresholds]",
-      "default-value": 0.9,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "model.noise_rois.thresholds"
-    },
-    {
-      "id": "model__orthogonalise",
-      "name": "model.orthogonalise",
-      "value-key": "[model.orthogonalise]",
-      "default-value": "none",
-      "type": "String",
-      "description": "String",
-      "value-choices": [
-        "none",
-        "cardiac",
-        "resp",
-        "mult",
-        "all",
-        "RETROICOR",
-        "HRV",
-        "RVT",
-        "movement",
-        "noise_rois"
-      ],
-      "optional": true,
-      "command-line-flag": "model.orthogonalise"
-    },
-    {
       "id": "model__other__include",
       "name": "model.other.include",
       "value-key": "[model.other.include]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "optional": true,
       "command-line-flag": "model.other.include"
-    },
-    {
-      "id": "model__output_multiple_regressors",
-      "name": "model.output_multiple_regressors",
-      "value-key": "[model.output_multiple_regressors]",
-      "default-value": "multiple_regressors.txt",
-      "type": "String",
-      "description": "name of output file for usage in SPM multiple_regressors",
-      "optional": true,
-      "command-line-flag": "model.output_multiple_regressors"
-    },
-    {
-      "id": "model__output_physio",
-      "name": "model.output_physio",
-      "value-key": "[model.output_physio]",
-      "default-value": "physio.mat",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "model.output_physio"
-    },
-    {
-      "id": "model__retroicor__include",
-      "name": "model.retroicor.include",
-      "value-key": "[model.retroicor.include]",
-      "default-value": "Yes",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "Yes",
-        "No"
-      ],
-      "optional": true,
-      "command-line-flag": "model.retroicor.include"
-    },
-    {
-      "id": "model__retroicor__order__c",
-      "name": "model.retroicor.order.c",
-      "value-key": "[model.retroicor.order.c]",
-      "default-value": 3,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.retroicor.order.c"
-    },
-    {
-      "id": "model__retroicor__order__cr",
-      "name": "model.retroicor.order.cr",
-      "value-key": "[model.retroicor.order.cr]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.retroicor.order.cr"
-    },
-    {
-      "id": "model__retroicor__order__r",
-      "name": "model.retroicor.order.r",
-      "value-key": "[model.retroicor.order.r]",
-      "default-value": 4,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.retroicor.order.r"
-    },
-    {
-      "id": "model__rvt__delays",
-      "name": "model.rvt.delays",
-      "value-key": "[model.rvt.delays]",
-      "default-value": 0,
-      "type": "Number",
-      "description": "real",
-      "optional": true,
-      "command-line-flag": "model.rvt.delays"
-    },
-    {
-      "id": "model__rvt__include",
-      "name": "model.rvt.include",
-      "value-key": "[model.rvt.include]",
-      "default-value": "No",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "Yes",
-        "No"
-      ],
-      "optional": true,
-      "command-line-flag": "model.rvt.include"
     },
     {
       "id": "ons_secs__c_scaling",
@@ -598,12 +766,12 @@
       "id": "verbose__close_figs",
       "name": "verbose.close_figs",
       "value-key": "[verbose.close_figs]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "optional": true,
       "command-line-flag": "verbose.close_figs"
@@ -633,12 +801,12 @@
       "id": "verbose__save_figs",
       "name": "verbose.save_figs",
       "value-key": "[verbose.save_figs]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "Yes",
-        "No"
+        "yes",
+        "no"
       ],
       "optional": true,
       "command-line-flag": "verbose.save_figs"
@@ -647,11 +815,11 @@
       "id": "verbose__show_figs",
       "name": "verbose.show_figs",
       "value-key": "[verbose.show_figs]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "No"
+        "no"
       ],
       "optional": true,
       "command-line-flag": "verbose.show_figs"
@@ -660,11 +828,11 @@
       "id": "verbose__use_tabs",
       "name": "verbose.use_tabs",
       "value-key": "[verbose.use_tabs]",
-      "default-value": "No",
+      "default-value": "no",
       "type": "String",
       "description": "bool",
       "value-choices": [
-        "No"
+        "no"
       ],
       "optional": true,
       "command-line-flag": "verbose.use_tabs"
