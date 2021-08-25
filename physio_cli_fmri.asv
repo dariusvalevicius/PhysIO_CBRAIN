@@ -1,4 +1,4 @@
-function physio_cli_fmri(in_dir, correct, varargin)   
+function physio_cli_fmri(in_dir, save_dir, fmri_data, correct, varargin)   
 %% A command line wrapper for the main entry function 
 % The main purpose of this script is integraton to CBRAIN yet it 
 % can be used with other frameworks as well, or compilation so tool can be used
@@ -82,8 +82,9 @@ addRequired(p, 'save_dir'); % Not sure if these are needed?
 addRequired(p, 'fmri_data');   %, @isfile);
 addRequired(p, 'correct');
 
-parse(p, in_dir, correct);
+parse(p, in_dir, save_dir, fmri_data, correct);
 
+fmri_data = fullfile(in_dir, fmri_data);
 
 %% Create default parameter structure with all fields
 physio = tapas_physio_new();
@@ -91,6 +92,8 @@ physio = tapas_physio_new();
 physio = setDefaults(physio);
 
 %% Set specified parameters (save_dir and varargin)
+
+physio.save_dir = save_dir;
 
 varargin(1:2:end) = strrep(varargin(1:2:end), '.', '__'); 
 fields = [varargin(1:2:end); varargin(2:2:end)];
@@ -104,10 +107,9 @@ for i = 1:size(fields, 2)
     physio = setfield(physio, fieldseq{:}, field_value);
 end
 
-%{
 physio.log_files.cardiac = fullfile(in_dir, physio.log_files.cardiac);
 physio.log_files.respiration = fullfile(in_dir, physio.log_files.respiration);
-%}
+
 
 
 %% postpone figure generation in first run - helps with compilation
@@ -208,9 +210,8 @@ for s = sessions
         
         physio = tapas_physio_main_create_regressors(physio);
         
-        if(strcmpi(correct, 'yes'))
-            performCorrection(fmri_data, physio);
-        end
+        performCorrection(fmri_data, physio);
+        
         
         
     end
@@ -218,7 +219,7 @@ for s = sessions
 end
 
 %% Run physiological recording preprocessing and noise modeling
-%{
+
 disp('Creating PhysIO regressors...');
 physio = tapas_physio_main_create_regressors(physio);
 
@@ -229,7 +230,7 @@ if verbose_level
   physio.verbose.level = verbose_level;
   tapas_physio_review(physio);
 end
-%}
+
 
 %% Unzip .nii file
 %{
@@ -274,6 +275,7 @@ end
 
 function performCorrection(fmri_file, physio)
 
+if(strcmpi(correct, 'yes'))
 
     disp('Correcting fMRI data...');
 
@@ -295,6 +297,7 @@ function performCorrection(fmri_file, physio)
 
     disp('Complete.');
 
+end
 
 end
 
