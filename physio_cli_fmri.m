@@ -76,10 +76,10 @@ p = inputParser;
 p.KeepUnmatched = true;
 
 addRequired(p, 'in_dir');
-addRequired(p, 'save_dir'); % Not sure if these are needed?
+%addRequired(p, 'save_dir'); % Not sure if these are needed?
 
 %fmri_data = fullfile(in_dir, fmri_data);
-addRequired(p, 'fmri_data');   %, @isfile);
+%addRequired(p, 'fmri_data');   %, @isfile);
 addRequired(p, 'correct');
 
 parse(p, in_dir, correct);
@@ -138,6 +138,8 @@ end
     % Currently implemented for BIDS and Philips only    
 
 % Get session directories
+
+subject_folder = in_dir;
 sessions = dir(subject_folder);
 sessions = {sessions(3:end).name};
 
@@ -194,8 +196,8 @@ for s = sessions
         
         % Unzip and set fmri param
         fmri_data = fullfile(subject_folder, s, 'func', j);
-        gunzip(fmri_data);
-        fmri_data = extractBefore(fmri_data, '.gz');
+        %gunzip(fmri_data);
+        %fmri_data = extractBefore(fmri_data, '.gz');
         
         % Set save dir and logfile params
         physio.save_dir = fullfile(subject_folder, s, 'func', save_foldername);
@@ -204,10 +206,23 @@ for s = sessions
         physio.log_files.cardiac = logfile;
         physio.log_files.respiration = logfile;
         
-        % Run PhysIO
+        % Refresh some params (they would stack otherwise)
+        physio.model.output_physio = 'physio.mat';
+        physio.model.output_multiple_regressors = 'multiple_regressors.txt';
+
+        % Get fMRI dimensions
+        fmri_j = double(niftiread(string(fmri_data)));
+        sz = size(fmri_j);
+        Nslices = sz(3);
+        Nframes = sz(4);
         
+        physio.scan_timing.sqpar.Nslices = Nslices;
+        physio.scan_timing.sqpar.Nscans = Nframes;
+        
+        % Run PhysIO
         physio = tapas_physio_main_create_regressors(physio);
         
+        % Run image correction
         if(strcmpi(correct, 'yes'))
             performCorrection(fmri_data, physio);
         end
@@ -248,11 +263,11 @@ fmrifilename = extractBetween(fmrigz_string, 1, strlength(fmrigz_string)-3);
 %% Perform correction
 
 performCorrection(fmri_data, physio);
-
+%}
 
 
 end
-%}
+
 
 function [S] = merge_struct(S_1, S_2)
 % update the first struct with values and keys of the second and returns the result
@@ -277,8 +292,10 @@ function performCorrection(fmri_file, physio)
 
     disp('Correcting fMRI data...');
 
+    %fmri_data = convertStringsToChars(fmri_data);
+    fmri_file = string(fmri_file);
     fmri_data = double(niftiread(fmri_file));
-    regressors = load(strcat(physio.save_dir, '/multiple_regressors.txt'));
+    regressors = load(fullfile(physio.save_dir, 'multiple_regressors.txt'));
 
     [fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors);
 
@@ -287,10 +304,10 @@ function performCorrection(fmri_file, physio)
 
     disp('Writing and zipping niftis...');
 
-    fmri_corrected_filename = append(extractBefore(fmri_file, '.nii'), '_corrected.nii');
+    fmri_corrected_filename = append(extractBetween(fmri_file, 'func/', '.nii'), '_corrected.nii');
     
-    niftiwrite(fmri_corrected, strcat(physio.save_dir, fmri_corrected_filename));
-    niftiwrite(pct_var_reduced, strcat(physio.save_dir, '/pct_var_reduced.nii'));
+    niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
+    niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
     %gzip(strcat(physio.save_dir, '/fmri_corrected.nii'));
 
     disp('Complete.');
