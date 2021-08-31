@@ -1,4 +1,4 @@
-function physio_cli_fmri(in_dir, correct, varargin)   
+function physio_cli_fmri(in_dir, use_case, correct, varargin)   
 %% A command line wrapper for the main entry function 
 % The main purpose of this script is integraton to CBRAIN yet it 
 % can be used with other frameworks as well, or compilation so tool can be used
@@ -78,6 +78,8 @@ p.KeepUnmatched = true;
 addRequired(p, 'in_dir');
 %addRequired(p, 'save_dir'); % Not sure if these are needed?
 
+addRequired(p, 'use_case');
+
 %fmri_data = fullfile(in_dir, fmri_data);
 %addRequired(p, 'fmri_data');   %, @isfile);
 addRequired(p, 'correct');
@@ -128,103 +130,180 @@ end
 
 %% Scan subject directory and perform correction on each fMRI file
 
-    % From input/subject folder
-    % Get every nifti in func
-    % and associated physlogfiles
-    % based on vendor
-    %   BIDS: .tsv.gz
-    %   Philips: .log
-    %   
-    % Currently implemented for BIDS and Philips only    
+if strcmp(use_case, 'BIDS subject folder')
 
-% Get session directories
+        % From input/subject folder
+        % Get every nifti in func
+        % and associated physlogfiles
+        % based on vendor
+        %   BIDS: .tsv.gz
+        %   Philips: .log
+        %   
+        % Currently implemented for BIDS and Philips only    
 
-subject_folder = in_dir;
-sessions = dir(subject_folder);
-sessions = {sessions(3:end).name};
+    % Get session directories
 
-
-% Set physlogfile suffix based on vendor
-vendor = physio.log_files.vendor;
-
-phys_suffix = '';
-
-switch vendor
-    case 'BIDS'
-        phys_suffix = '.tsv.gz';
-    case 'Philips'
-        phys_suffix = '.log';
-end
+    subject_folder = in_dir;
+    sessions = dir(subject_folder);
+    sessions = {sessions(3:end).name};
 
 
-% Iterate through sessions
-for s = sessions
-    
-    % Get all files in func directory
-    func = dir(fullfile(subject_folder, s{:}, 'func'));
-    func = {func(3:end).name};
-    
-    % Get fMRI files
-    index = find(contains(func, '.nii.gz'));
-    fmri_files = func(index);
-    
-    % For every fMRI file
-    % Try to find corresponding physio logfile
-    % Corresponding to run #
-    % Set PhysIO parameters and run PhysIO
-    
-    for j = fmri_files
-       
-        % Get run number
-        run_num = extractAfter(j, 'run-');
-        run_num = run_num{:}(1);
-        
-        % Find logfile with run number
-        
-        wildcard = append('.*run-', run_num, '.*', phys_suffix);
-        index = regexp(func, wildcard);
-        index = find(~cellfun(@isempty, index));
+    % Set physlogfile suffix based on vendor
+    vendor = physio.log_files.vendor;
 
-        logfile = func(index);
-       
-        % Set PhysIO params
-        
-        save_foldername = append(extractBefore(j, '.nii.gz'), '_physio_results');
-        
-        % TODO add temp file functionality (see
-        % tapas_physio_read_physlogfiles_bids.m
-        
-        % Unzip and set fmri param
-        fmri_data = fullfile(subject_folder, s, 'func', j);
-        %gunzip(fmri_data);
-        %fmri_data = extractBefore(fmri_data, '.gz');
-        
-        % Set save dir and logfile params
-        physio.save_dir = fullfile(subject_folder, s, 'func', save_foldername);
-        
-        logfile = fullfile(subject_folder, s, 'func', logfile);
-        physio.log_files.cardiac = logfile;
-        physio.log_files.respiration = logfile;
-        
-        % Run PhysIO
-        
-        
-        physio.model.output_physio = 'physio.mat';
-        physio.model.output_multiple_regressors = 'multiple_regressors.txt';
+    phys_suffix = '';
 
-        
-        
-        
-        physio = tapas_physio_main_create_regressors(physio);
-        
-        if(strcmpi(correct, 'yes'))
-            performCorrection(fmri_data, physio);
+    switch vendor
+        case 'BIDS'
+            phys_suffix = '.tsv.gz';
+        case 'Philips'
+            phys_suffix = '.log';
+    end
+
+
+    % Iterate through sessions
+    for s = sessions
+
+        % Get all files in func directory
+        func = dir(fullfile(subject_folder, s{:}, 'func'));
+        func = {func(3:end).name};
+
+        % Get fMRI files
+        index = find(contains(func, '.nii.gz'));
+        fmri_files = func(index);
+
+        % For every fMRI file
+        % Try to find corresponding physio logfile
+        % Corresponding to run #
+        % Set PhysIO parameters and run PhysIO
+
+        for j = fmri_files
+
+            % Get run number
+            run_num = extractAfter(j, 'run-');
+            run_num = run_num{:}(1);
+
+            % Find logfile with run number
+
+            wildcard = append('.*run-', run_num, '.*', phys_suffix);
+            index = regexp(func, wildcard);
+            index = find(~cellfun(@isempty, index));
+
+            logfile = func(index);
+
+            % Set PhysIO params
+
+            save_foldername = append(extractBefore(j, '.nii.gz'), '_physio_results');
+
+            % TODO add temp file functionality (see
+            % tapas_physio_read_physlogfiles_bids.m
+
+            % Unzip and set fmri param
+            fmri_data = fullfile(subject_folder, s, 'func', j);
+            %gunzip(fmri_data);
+            %fmri_data = extractBefore(fmri_data, '.gz');
+
+            % Set save dir and logfile params
+            physio.save_dir = fullfile(subject_folder, s, 'func', save_foldername);
+
+            logfile = fullfile(subject_folder, s, 'func', logfile);
+            physio.log_files.cardiac = logfile;
+            physio.log_files.respiration = logfile;
+
+            % Refresh some params (they would stack otherwise)
+            physio.model.output_physio = 'physio.mat';
+            physio.model.output_multiple_regressors = 'multiple_regressors.txt';
+
+            % Get fMRI dimensions
+            fmri_j = double(niftiread(string(fmri_data)));
+            sz = size(fmri_j);
+            Nslices = sz(3);
+            Nframes = sz(4);
+
+            physio.scan_timing.sqpar.Nslices = Nslices;
+            physio.scan_timing.sqpar.Nscans = Nframes;
+
+            % Run PhysIO
+            physio = tapas_physio_main_create_regressors(physio);
+
+            % Run image correction
+            if(strcmpi(correct, 'yes'))
+                performCorrection(fmri_data, physio);
+            end
+
+
         end
-        
-        
+
+    end
+
+elseif strcmp(use_case, 'Single file')
+    
+    
+    % Find 
+    file_inputs = dir(in_dir);
+    file_inputs = {file_inputs(3:end).name};
+    
+    index = find(contains(file_inputs, '.nii.gz'));
+    fmri_file = file_inputs(index);
+    
+    
+    % Set physlogfile suffix based on vendor
+    vendor = physio.log_files.vendor;
+    
+    phys_suffix = '';
+    
+    switch vendor
+        case 'BIDS'
+            phys_suffix = '.tsv.gz';
+        case 'Philips'
+            phys_suffix = '.log';
     end
     
+    % Find logfile
+    index = find(contains(file_inputs, phys_suffix));
+    logfile = file_inputs(index);
+    
+    
+    
+    % Set PhysIO params
+    
+    save_foldername = append(extractBefore(in_dir, '.nii.gz'), '_physio_results');
+    
+    % TODO add temp file functionality (see
+    % tapas_physio_read_physlogfiles_bids.m
+    
+    % Unzip and set fmri param
+    fmri_data = fullfile(in_dir, fmri_file);
+    
+    % Set save dir and logfile params
+    physio.save_dir = fullfile(in_dir, save_foldername);
+    
+    logfile = fullfile(ind_dir, logfile);
+    physio.log_files.cardiac = logfile;
+    physio.log_files.respiration = logfile;
+    
+    
+    % Get fMRI dimensions
+    fmri_j = double(niftiread(string(fmri_data)));
+    sz = size(fmri_j);
+    Nslices = sz(3);
+    Nframes = sz(4);
+    
+    physio.scan_timing.sqpar.Nslices = Nslices;
+    physio.scan_timing.sqpar.Nscans = Nframes;
+    
+    % Run PhysIO
+    physio = tapas_physio_main_create_regressors(physio);
+    
+    % Run image correction
+    if(strcmpi(correct, 'yes'))
+        performCorrection(fmri_data, physio);
+    end
+    
+    
 end
+    
+
 
 %% Run physiological recording preprocessing and noise modeling
 %{

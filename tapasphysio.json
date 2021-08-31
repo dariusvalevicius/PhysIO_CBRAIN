@@ -1,10 +1,10 @@
 {
-  "tool-version": "8.0",
+  "tool-version": "9.0",
   "name": "PhysIO_Tapas",
   "description": "Tapas Physio: Physiological noise correction for fMRI",
   "author": "Lars Kasper, Zurich University and ETH Zurich",
   "descriptor-url": "https://github.com/MontrealSergiy/cbrain_plugins_physiophilips/blob/master/cbrain_task_descriptors/tapasphysio.json",
-  "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/physiotapas [INDIR] [OUT] [configfile] [presetdefaults] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [ons_secs.c_scaling] [ons_secs.r_scaling] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [verbose.close_figs] [verbose.fig_output_file] [verbose.level] [verbose.save_figs] [verbose.show_figs] [verbose.use_tabs]",
+  "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/physiotapas [INDIR] [use_case] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
   "inputs": [
     {
       "description": "Input folder for physiological, fMRI and other data.",
@@ -16,7 +16,21 @@
       "name": "Input folder"
     },
     {
-      "description": "Runs Correct noise",
+      "description": "You can either specify a BIDS subject directory, in which case every contained fMRI file will be processed by Physio, or you can input a folder with just one fMRI-logfile combination.",
+      "value-key": "[use_case]",
+      "command-line-flag": "use_case",
+      "optional": false,
+      "list": false,
+      "value-choices": [
+        "BIDS_subject_folder",
+        "Single_run"
+      ],
+      "type": "String",
+      "id": "correct",
+      "name": "Use Case"
+    },
+    {
+      "description": "Produce corrected copies of fMRI images.",
       "default-value": "no",
       "value-key": "[correct]",
       "command-line-flag": "correct",
@@ -24,6 +38,7 @@
       "list": false,
       "value-choices": [
         "no"
+        "yes"
       ],
       "type": "String",
       "id": "correct",
@@ -131,7 +146,7 @@
       "command-line-flag": "scan_timing.sqpar.Nslices"
     },
     {
-      "id": "scan_timing__sqpar__NslicesPerbeat",
+      "id": "scan_timing__sqpar__NslicesPerBeat",
       "name": "Number of Slices Per Beat",
       "value-key": "[scan_timing.sqpar.NslicesPerBeat]",
       "type": "Number",
@@ -188,7 +203,7 @@
       "command-line-flag": "scan_timing.sqpar.time_slice_to_slice"
     },
     {
-      "id": "scan_timing__Nprep",
+      "id": "scan_timing__sqpar__Nprep",
       "name": "Number of Preparation Pulses",
       "value-key": "[scan_timing.sqpar.Nprep]",
       "type": "Number",
@@ -325,9 +340,9 @@
       "command-line-flag": "preproc.cardiac.filter.passband"
     },
     {
-      "id": "preproc__cardiac__filter__passband",
+      "id": "preproc__cardiac__filter__stopband",
       "name": "Filter Stopband",
-      "value-key": "[preproc.cardiac.filter.passband]",
+      "value-key": "[preproc.cardiac.filter.stopband]",
       "default-value": [
         0.3,
         9
@@ -337,7 +352,7 @@
       "optional": true,
       "list": true,
       "list-separator": ",",
-      "command-line-flag": "preproc.cardiac.filter.passband"
+      "command-line-flag": "preproc.cardiac.filter.stopband"
     },
     {
       "id": "preproc__cardiac__initial_cpulse_select__method",
@@ -607,69 +622,115 @@
     },
     {
       "id": "model__noise_rois__fmri_files",
-      "name": "Include Noise ROIs",
-      "value-key": "[model.noise_rois.include]",
-      "default-value": "no",
+      "name": "fMRI Time Series File(s)",
+      "value-key": "[model.noise_rois.fmri_files]",
       "type": "String",
-      "description": "Noise ROIs model (Principal components of anatomical regions), similar to aCompCor, Hehzadi et al. 2007.",
+      "description": "Preprocessed fmri nifti/analyze files, from which time series shall be extracted.",
+      "optional": true,
+      "command-line-flag": "model.noise_rois.fmri_files"
+    },
+    {
+      "id": "model__noise_rois__roi_files",
+      "name": "Noise ROI Image File(s)",
+      "value-key": "[model.noise_rois.roi_files]",
+      "type": "String",
+      "description": "Masks/tissues probability maps characterizing where noise resides.\nThese volumes must be in the same space as the functional colume where the time series will be extracted.",
+      "optional": true,
+      "command-line-flag": "model.noise_rois.roi_files"
+    },
+    {
+      "id": "model__noise_rois__force_coregister",
+      "name": "Force Coregister: Estimate & Reslice of the noise ROIs",
+      "value-key": "[model.noise_rois.force_coregister]",
+      "default-value": "yes",
+      "type": "String",
+      "description": "Noise ROIs volumes must have the same geometry as the functional time series.\nUt neabs sane affine transformation (space) and same matrix (voxel size).",
       "value-choices": [
         "yes",
         "no"
       ],
       "optional": true,
-      "command-line-flag": "model.noise_rois.include"
-    },
-    {
-      "id": "model__noise_rois__force_coregister",
-      "name": "model.noise_rois.force_coregister",
-      "value-key": "[model.noise_rois.force_coregister]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
       "command-line-flag": "model.noise_rois.force_coregister"
     },
     {
-      "id": "model__noise_rois__n_components",
-      "name": "model.noise_rois.n_components",
-      "value-key": "[model.noise_rois.n_components]",
-      "default-value": 1,
+      "id": "model__noise_rois__thresholds",
+      "name": "ROI thresholds",
+      "value-key": "[model.noise_rois.thresholds]",
+      "default-value": 0.9,
       "type": "Number",
-      "description": "Integer",
-      "integer": true,
+      "description": "Single threshold or vector [1, nRois] of thresholds to be applied to mask files to decide which voxels to include (e.g. a probability like 0.99, if roi files are tissue probability maps)",
       "optional": true,
-      "command-line-flag": "model.noise_rois.n_components"
+      "command-line-flag": "model.noise_rois.thresholds"
     },
     {
       "id": "model__noise_rois__n_voxel_crop",
-      "name": "model.noise_rois.n_voxel_crop",
+      "name": "Number of ROI pixels to be cropped",
       "value-key": "[model.noise_rois.n_voxel_crop]",
       "default-value": 0,
       "type": "Number",
-      "description": "Integer",
+      "description": "Single number or vector [1, nRois] of number of voxels to crop per ROI.",
       "integer": true,
       "optional": true,
       "command-line-flag": "model.noise_rois.n_voxel_crop"
     },
     {
-      "id": "model__noise_rois__thresholds",
-      "name": "model.noise_rois.thresholds",
-      "value-key": "[model.noise_rois.thresholds]",
-      "default-value": 0.9,
+      "id": "model__noise_rois__n_components",
+      "name": "Number of principal components",
+      "value-key": "[model.noise_rois.n_components]",
+      "default-value": 1,
       "type": "Number",
-      "description": "real",
+      "description": "Single number or vector [1, nRois] of numbers.\nInteger >- 1: Number of principal components to be extracted from all voxel time series within each ROI\nFloat in [0,1[: Choose as many components as needed to explain this relative shae of the variance.",
+      "integer": true,
       "optional": true,
-      "command-line-flag": "model.noise_rois.thresholds"
+      "command-line-flag": "model.noise_rois.n_components"
+    },
+    {
+      "id": "model__movement__include",
+      "name": "Include Movement Model",
+      "value-key": "[model.movement.include]",
+      "default-value": "no",
+      "type": "String",
+      "description": "Motion Assessment and Regression Models\nMotion 6/12/24 regressors from realignment as described in Friston et al., 1996\nMotion Censoring ('spike' regressors for motion-corrupted volumes)\nMotion scrubbing (linear interpolation of censored volumes by nearest neighbours)",
+      "value-choices": [
+        "yes",
+        "no"
+      ],
+      "optional": true,
+      "command-line-flag": "model.movement.include"
+    },
+    {
+      "id": "model__movement__file_realignment_parameters",
+      "name": "Movement Realignment Parameter File",
+      "value-key": "[model.movement.file_realignment_parameters]",
+      "type": "String",
+      "optional": true,
+      "command-line-flag": "model.movement.file_realignment_parameters"
+    },
+    {
+      "id": "model__movement__order",
+      "name": "Movement Order",
+      "value-key": "[model.movement.order]",
+      "default-value": 6,
+      "type": "Number",
+      "description": "Order of movement regressors 6/12/24, including derivatives and squared parameters/derivatives.",
+      "integer": true,
+      "value-choices": [
+        6,
+        12,
+        24
+      ],
+      "optional": true,
+      "command-line-flag": "model.movement.order"
     },
     {
       "id": "model__movement__censoring_method",
-      "name": "model.movement.censoring_method",
+      "name": "Movement Censoring Method for Thresholding",
       "value-key": "[model.movement.censoring_method]",
-      "default-value": "MAXVAL",
+      "default-value": "FD",
       "type": "String",
-      "description": "String",
+      "description": "Censoring method used for thresholding",
       "value-choices": [
+        "none",
         "MAXVAL",
         "FD",
         "DVARS"
@@ -679,60 +740,25 @@
     },
     {
       "id": "model__movement__censoring_threshold",
-      "name": "model.movement.censoring_threshold",
+      "name": "Movement Censoring Outlier Threshold",
       "value-key": "[model.movement.censoring_threshold]",
       "default-value": [
         0.5
       ],
       "type": "Number",
-      "description": "interval",
+      "description": "Threshold, above which a stick ('spike') regressors is created for corresponding outlier volume exceeding threshold.",
       "optional": true,
       "list": true,
       "list-separator": ",",
       "command-line-flag": "model.movement.censoring_threshold"
     },
     {
-      "id": "model__movement__file_realignment_parameters",
-      "name": "model.movement.file_realignment_parameters",
-      "value-key": "[model.movement.file_realignment_parameters]",
-      "default-value": "rp_fMRI.txt",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "model.movement.file_realignment_parameters"
-    },
-    {
-      "id": "model__movement__include",
-      "name": "model.movement.include",
-      "value-key": "[model.movement.include]",
-      "default-value": "no",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "yes",
-        "no"
-      ],
-      "optional": true,
-      "command-line-flag": "model.movement.include"
-    },
-    {
-      "id": "model__movement__order",
-      "name": "model.movement.order",
-      "value-key": "[model.movement.order]",
-      "default-value": 6,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "model.movement.order"
-    },
-    {
       "id": "model__other__include",
-      "name": "model.other.include",
+      "name": "Include Other Multiple Regressors",
       "value-key": "[model.other.include]",
       "default-value": "no",
       "type": "String",
-      "description": "bool",
+      "description": "Other multiple regressor file(s).",
       "value-choices": [
         "yes",
         "no"
@@ -741,101 +767,38 @@
       "command-line-flag": "model.other.include"
     },
     {
-      "id": "ons_secs__c_scaling",
-      "name": "ons_secs.c_scaling",
-      "value-key": "[ons_secs.c_scaling]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "ons_secs.c_scaling"
-    },
-    {
-      "id": "ons_secs__r_scaling",
-      "name": "ons_secs.r_scaling",
-      "value-key": "[ons_secs.r_scaling]",
-      "default-value": 1,
-      "type": "Number",
-      "description": "Integer",
-      "integer": true,
-      "optional": true,
-      "command-line-flag": "ons_secs.r_scaling"
-    },
-    {
-      "id": "verbose__close_figs",
-      "name": "verbose.close_figs",
-      "value-key": "[verbose.close_figs]",
+      "id": "model__other__input_multiple_regressors",
+      "name": "Input Multiple Regressors Files",
+      "value-key": "[model.other.include]",
       "default-value": "no",
       "type": "String",
-      "description": "bool",
       "value-choices": [
         "yes",
         "no"
       ],
       "optional": true,
-      "command-line-flag": "verbose.close_figs"
-    },
-    {
-      "id": "verbose__fig_output_file",
-      "name": "verbose.fig_output_file",
-      "value-key": "[verbose.fig_output_file]",
-      "default-value": "PhysIO_output.fig",
-      "type": "String",
-      "description": "String",
-      "optional": true,
-      "command-line-flag": "verbose.fig_output_file"
+      "command-line-flag": "model.other.include"
     },
     {
       "id": "verbose__level",
-      "name": "verbose.level",
-      "value-key": "[verbose.level]",
+      "name": "Verbose Level",
+      "value-key": "verbose.level]",
       "default-value": 2,
       "type": "Number",
-      "description": "Integer",
+      "description": "Determines how many figures shall be generated to follow the workflow of the toolbox and whether the graphical output shall be saved.\n0 = No graphical output\n1 = Main plots\n2 = Debugging plots\n3 = All plots",
       "integer": true,
       "optional": true,
       "command-line-flag": "verbose.level"
     },
     {
-      "id": "verbose__save_figs",
-      "name": "verbose.save_figs",
-      "value-key": "[verbose.save_figs]",
-      "default-value": "no",
+      "id": "verbose__fig_output_file",
+      "name": "Figure Output File Name",
+      "value-key": "[verbose.fig_output_file]",
+      "default-value": "PhysIO_output.fig",
       "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "yes",
-        "no"
-      ],
+      "description": "File name where figures are saved to.\nSupported figure formats (via filename suffix): jpg, png, fig, ps",
       "optional": true,
-      "command-line-flag": "verbose.save_figs"
-    },
-    {
-      "id": "verbose__show_figs",
-      "name": "verbose.show_figs",
-      "value-key": "[verbose.show_figs]",
-      "default-value": "no",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "no"
-      ],
-      "optional": true,
-      "command-line-flag": "verbose.show_figs"
-    },
-    {
-      "id": "verbose__use_tabs",
-      "name": "verbose.use_tabs",
-      "value-key": "[verbose.use_tabs]",
-      "default-value": "no",
-      "type": "String",
-      "description": "bool",
-      "value-choices": [
-        "no"
-      ],
-      "optional": true,
-      "command-line-flag": "verbose.use_tabs"
+      "command-line-flag": "verbose.fig_output_file"
     }
   ],
   "schema-version": "0.5",
@@ -845,11 +808,11 @@
       "id": "log_files_group",
       "members": [
         "log_files__vendor",
-        "log_files__log_cardiac",
-        "log_files__log_respiration",
-        "log_files__log_scan_timing",
+        "log_files__cardiac",
+        "log_files__respiration",
+        "log_files__scan_timing",
         "log_files__sampling_interval",
-        "log_files__relative_start_aquisition",
+        "log_files__relative_start_acquisition",
         "log_files__align_scan"
       ],
       "name": "Log File Parameters"
@@ -880,29 +843,27 @@
         "preproc__cardiac__initial_cpulse_select__min",
         "preproc__cardiac__initial_cpulse_select__file",
         "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
-        "preproc__cposthoc_cpulse_select__method"
+        "preproc__cardiac__posthoc_cpulse_select__method"
       ],
       "name": "Preprocessing Paramaters"
     },
     {
       "description": "Physiological model to be estimated and included in GLM as multiple_regressors.txt.",
       "id": "model_group",
-      "memebers": [
-        "output_multiple_regressors",
-        "output_physio",
-        "orthogonalise",
-        "censor_unreliable_recording_intervals",
-        "retroicor__include",
-        "retroicor__order__c",
-        "retroicor__order__r",
-        "retroicor__order__cr",
-        "rvt__include",
-        "hrv__include",
-        "noise_rois__include",
-        "movement__include",
-        "other__include",
-        "verbose__level",
-        "verbose__fig_output_file"
+      "members": [
+        "model__output_multiple_regressors",
+        "model__output_physio",
+        "model__orthogonalise",
+        "model__censor_unreliable_recording_intervals",
+        "model__retroicor__include",
+        "model__retroicor__order__c",
+        "model__retroicor__order__r",
+        "model__retroicor__order__cr",
+        "model__rvt__include",
+        "model__hrv__include",
+        "model__noise_rois__include",
+        "model__movement__include",
+        "model__other__include"
       ],
       "name": "Model Parameters"
     }

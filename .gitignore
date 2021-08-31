@@ -6,3 +6,5 @@ physio_cli_fmri/*
 *.prj
 compiled_tool/*
 imagetestdocker/*
+sub-03/*
+single-run-input/*
