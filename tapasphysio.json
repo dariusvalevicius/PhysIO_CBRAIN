@@ -26,7 +26,7 @@
         "Single_run"
       ],
       "type": "String",
-      "id": "correct",
+      "id": "use_case",
       "name": "Use Case"
     },
     {
@@ -37,7 +37,7 @@
       "optional": false,
       "list": false,
       "value-choices": [
-        "no"
+        "no",
         "yes"
       ],
       "type": "String",
@@ -829,7 +829,11 @@
         "scan_timing__sqpar__onset_slice",
         "scan_timing__sqpar__time_slice_to_slice",
         "scan_timing__sqpar__Nprep",
-        "scan_timing__sync__method"
+        "scan_timing__sync__method",
+        "scan_timing__sync__grad_direction",
+        "scan_timing__sync__zero",
+        "scan_timing__sync__vol",
+        "scan_timing__sync__vol_spacing"
       ],
       "name": "Scan Timing Parameters"
     },
@@ -839,11 +843,18 @@
       "members": [
         "preproc__cardiac__modality",
         "preproc__cardiac__filter__include",
+        "preproc__cardiac__filter__type",
+        "preproc__cardiac__filter__passband",
+        "preproc__cardiac__filter__stopband",
         "preproc__cardiac__initial_cpulse_select__method",
         "preproc__cardiac__initial_cpulse_select__min",
         "preproc__cardiac__initial_cpulse_select__file",
         "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm",
-        "preproc__cardiac__posthoc_cpulse_select__method"
+        "preproc__cardiac__posthoc_cpulse_select__method",
+        "preproc__cardiac__posthoc_cpulse_select__file",
+        "preproc__cardiac__posthoc_cpulse_select__percentile",
+        "preproc__cardiac__posthoc_cpulse_select__upper_thresh",
+        "preproc__cardiac__posthoc_cpulse_select__lower_thresh"
       ],
       "name": "Preprocessing Paramaters"
     },
@@ -860,12 +871,34 @@
         "model__retroicor__order__r",
         "model__retroicor__order__cr",
         "model__rvt__include",
+        "model__rvt__delays",
         "model__hrv__include",
+        "model__hrv__delays",
         "model__noise_rois__include",
+        "model__noise_rois__fmri_files",
+        "model__noise_rois__roi_files",
+        "model__noise_rois__force_coregister",
+        "model__noise_rois__thresholds",
+        "model__noise_rois__n_voxel_crop",
+        "model__noise_rois__n_components",
         "model__movement__include",
-        "model__other__include"
+        "model__movement__file_realignment_parameters",
+        "model__movement__order",
+        "model__movement__censoring_method",
+        "model__movement__censoring_threshold",
+        "model__other__include",
+        "model__other__input_multiple_regressors"
       ],
       "name": "Model Parameters"
+    },
+    {
+      "description": "Figure generation options",
+      "id": "verbose_group",
+      "members": [
+        "verbose__level",
+        "verbose__fig_output_file"
+      ],
+      "name": "Verbose Parameters"
     }
   ],
   "output-files": [
