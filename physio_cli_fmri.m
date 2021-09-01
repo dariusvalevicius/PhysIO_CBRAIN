@@ -60,8 +60,8 @@ function physio_cli_fmri(in_dir, use_case, correct, varargin)
 % This file is a wrapper for TAPAS PhysIO Toolbox
 
 
-SEPARATOR = '\s*[,\s]'; % the separator for vector/interval inputs - coma and/or white space
-DOT = '__'; % to use MATLAP argument parser the dots are replaced with doubleunderscore
+%SEPARATOR = '\s*[,\s]'; % the separator for vector/interval inputs - coma and/or white space
+%DOT = '__'; % to use MATLAP argument parser the dots are replaced with doubleunderscore
 
 % Diagnostic print output
 disp(pwd);
@@ -76,7 +76,7 @@ p = inputParser;
 p.KeepUnmatched = true;
 
 addRequired(p, 'in_dir');
-%addRequired(p, 'save_dir'); % Not sure if these are needed?
+%addRequired(p, 'save_dir');
 
 addRequired(p, 'use_case');
 
@@ -97,19 +97,23 @@ physio = setDefaults(physio);
 varargin(1:2:end) = strrep(varargin(1:2:end), '.', '__'); 
 fields = [varargin(1:2:end); varargin(2:2:end)];
 
+
+% Set params in physio structure from varargin
 for i = 1:size(fields, 2)
+    
     field_value = fields{2, i};
+    
     if (~isnan(str2double(field_value)))
         field_value = str2double(field_value);
+    elseif (strcmp(field_value, 'yes') || strcmp(field_value, 'true'))
+        field_value = 1;
+    elseif (strcmp(field_value, 'no') || strcmp(field_value, 'false'))
+        field_value = 0;
     end
+    
     fieldseq = regexp(fields{1, i}, '__', 'split');
     physio = setfield(physio, fieldseq{:}, field_value);
 end
-
-%{
-physio.log_files.cardiac = fullfile(in_dir, physio.log_files.cardiac);
-physio.log_files.respiration = fullfile(in_dir, physio.log_files.respiration);
-%}
 
 
 %% postpone figure generation in first run - helps with compilation
@@ -160,7 +164,8 @@ if strcmp(use_case, 'BIDS_subject_folder')
             phys_suffix = '.log';
     end
 
-
+    disp('Iterating through fMRI files in subject folder.');
+    
     % Iterate through sessions
     for s = sessions
 
@@ -169,8 +174,7 @@ if strcmp(use_case, 'BIDS_subject_folder')
         func = {func(3:end).name};
 
         % Get fMRI files
-        index = find(contains(func, '.nii.gz'));
-        fmri_files = func(index);
+        fmri_files = func(contains(func, '.nii.gz'));
 
         % For every fMRI file
         % Try to find corresponding physio logfile
@@ -179,29 +183,33 @@ if strcmp(use_case, 'BIDS_subject_folder')
 
         for j = fmri_files
 
-            % Get run number
-            run_num = extractAfter(j, 'run-');
-            run_num = run_num{:}(1);
+            disp(append('Correcting: ', j{:}))
+            
+            % Get run number            
+            if contains(j, 'run-')
+                run_num = extractAfter(j, 'run-');
+                run_num = run_num{:}(1);
+            else
+                disp('This fMRI file does not correspond to a run. Skipping.')
+                disp('Make sure that fMRI files contain the regular expression *run*.nii.gz');
+                continue;
+            end
+            
 
             % Find logfile with run number
 
             wildcard = append('.*run-', run_num, '.*', phys_suffix);
+            
             index = regexp(func, wildcard);
-            index = find(~cellfun(@isempty, index));
 
-            logfile = func(index);
+            logfile = string(func(~cellfun(@isempty, index)));
 
             % Set PhysIO params
 
             save_foldername = append(extractBefore(j, '.nii.gz'), '_physio_results');
 
-            % TODO add temp file functionality (see
-            % tapas_physio_read_physlogfiles_bids.m
-
             % Unzip and set fmri param
-            fmri_data = fullfile(subject_folder, s, 'func', j);
-            %gunzip(fmri_data);
-            %fmri_data = extractBefore(fmri_data, '.gz');
+            fmri_filename = string(fullfile(subject_folder, s, 'func', j));
 
             % Set save dir and logfile params
             physio.save_dir = fullfile(subject_folder, s, 'func', save_foldername);
@@ -211,26 +219,31 @@ if strcmp(use_case, 'BIDS_subject_folder')
             physio.log_files.respiration = logfile;
 
             % Refresh some params (they would stack otherwise)
+            % NOTE: the fact that this is needed may signal that other
+            % parameters may break/stack when physio is looped. Keep an eye out,
+            % may need to recode
             physio.model.output_physio = 'physio.mat';
             physio.model.output_multiple_regressors = 'multiple_regressors.txt';
 
             % Get fMRI dimensions
-            fmri_j = double(niftiread(string(fmri_data)));
+            fmri_j = double(niftiread(string(fmri_filename)));
             sz = size(fmri_j);
             Nslices = sz(3);
             Nframes = sz(4);
 
             physio.scan_timing.sqpar.Nslices = Nslices;
             physio.scan_timing.sqpar.Nscans = Nframes;
+            
+            % Figure out what is going on with these figs!!
+            physio.verbose.level = 0;
 
             % Run PhysIO
-            physio = tapas_physio_main_create_regressors(physio);
+            physio = run_physio(physio, verbose_level, fig_output_file);
 
             % Run image correction
             if(strcmpi(correct, 'yes'))
-                performCorrection(fmri_data, physio);
+                performCorrection(fmri_filename, fmri_j, physio);
             end
-
 
         end
 
@@ -242,9 +255,9 @@ elseif strcmp(use_case, 'Single_run')
     % Find fMRI file in input folder
     file_inputs = dir(in_dir);
     file_inputs = {file_inputs(3:end).name};
-    
-    index = find(contains(file_inputs, '.nii.gz'));
-    fmri_file = file_inputs(index);
+
+    fmri_filename = string(file_inputs(contains(file_inputs, '.nii.gz')));
+
     
     
     % Set physlogfile suffix based on vendor
@@ -260,19 +273,15 @@ elseif strcmp(use_case, 'Single_run')
     end
     
     % Find logfile
-    index = find(contains(file_inputs, phys_suffix));
-    logfile = file_inputs(index);
+    logfile = string(file_inputs(contains(file_inputs, phys_suffix)));
     
     
     % Set PhysIO params
     
-    save_foldername = append(extractBefore(fmri_file, '.nii.gz'), '_physio_results');
-    
-    % TODO add temp file functionality (see
-    % tapas_physio_read_physlogfiles_bids.m
+    save_foldername = append(extractBefore(fmri_filename, '.nii.gz'), '_physio_results');
     
     % Unzip and set fmri param
-    fmri_data = fullfile(in_dir, fmri_file);
+    fmri_filename = fullfile(in_dir, fmri_filename);
     
     % Set save dir and logfile params
     physio.save_dir = fullfile(in_dir, save_foldername);
@@ -283,7 +292,7 @@ elseif strcmp(use_case, 'Single_run')
     
     
     % Get fMRI dimensions
-    fmri_j = double(niftiread(string(fmri_data)));
+    fmri_j = double(niftiread(string(fmri_filename)));
     sz = size(fmri_j);
     Nslices = sz(3);
     Nframes = sz(4);
@@ -292,54 +301,39 @@ elseif strcmp(use_case, 'Single_run')
     physio.scan_timing.sqpar.Nscans = Nframes;
     
     % Run PhysIO
-    physio = tapas_physio_main_create_regressors(physio);
+    physio = run_physio(physio, verbose_level, fig_output_file);
     
     % Run image correction
     if(strcmpi(correct, 'yes'))
-        performCorrection(fmri_data, physio);
+        performCorrection(fmri_filename, fmri_j, physio);
     end
     
     
 end
-    
 
 
-%% Run physiological recording preprocessing and noise modeling
-%{
+end
+
+
+function [physio] = run_physio(physio, verbose_level, fig_output_file)
+
+% Run physiological recording preprocessing and noise modeling
+
 disp('Creating PhysIO regressors...');
 physio = tapas_physio_main_create_regressors(physio);
+disp('Complete.');
 
-
-%% Build figures
+disp('Building figures...');
+% Build figures
 if verbose_level
-  physio.verbose.fig_output_file = fig_output_file; % has to reset, the old value is distorted
-  physio.verbose.level = verbose_level;
-  tapas_physio_review(physio);
+    physio.verbose.fig_output_file = fig_output_file; % has to reset, the old value is distorted
+    physio.verbose.level = verbose_level;
+    % Suspending for now
+    %tapas_physio_review(physio);
 end
-%}
-
-%% Unzip .nii file
-%{
-disp('PhysIO complete.');
-fprintf('PhysIO save dir: %s\n', physio.save_dir);
-
-disp('Unzipping fMRI data...');
-fmrigz_string = convertCharsToStrings(fmri_data);
-
-% Extract .nii from .gz
-gunzip(fmrigz_string);
-
-% Get header from extracted .nii file
-fmrifilename = extractBetween(fmrigz_string, 1, strlength(fmrigz_string)-3);
-
-%% Perform correction
-
-performCorrection(fmri_data, physio);
-%}
-
+disp('Complete.');
 
 end
-
 
 function [S] = merge_struct(S_1, S_2)
 % update the first struct with values and keys of the second and returns the result
@@ -359,24 +353,26 @@ S = S_1;
 end
 
 
-function performCorrection(fmri_file, physio)
+function performCorrection(fmri_filename, fmri_data, physio)
 
 
     disp('Correcting fMRI data...');
 
-    %fmri_data = convertStringsToChars(fmri_data);
-    fmri_file = string(fmri_file);
-    fmri_data = double(niftiread(fmri_file));
+    % Load multiple regressors file
     regressors = load(fullfile(physio.save_dir, 'multiple_regressors.txt'));
 
+    % Run correction
     [fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors);
 
     disp('Correction complete.');
     fprintf('Maximum variance reduced(diagnostic): %d\n', max(pct_var_reduced, [], 'all'));
 
-    disp('Writing and zipping niftis...');
+    disp('Writing niftis...');
 
-    fmri_corrected_filename = append(extractBetween(fmri_file, '/', '.nii'), '_corrected.nii');
+    % Create output files
+    [~,fmri_name_only,ext] = fileparts(fmri_filename);
+    fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii.gz');
+    fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
     
     niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
     niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
@@ -424,13 +420,17 @@ end
 
 function [mask] = createMask(fmri_data)
 % Quick and dirty whole-brain masking function (not very good)
+% Sets to zero all voxels whose average activation is less than 80% of the
+% grand mean
 
+disp('Applying mask...')
 fmri_avg = mean(fmri_data, 4);
 fmri_grand_mean = mean(fmri_avg, 'all');
 
 mask = ones(size(fmri_avg));
 
 mask(fmri_avg < (0.8 * fmri_grand_mean)) = 0;
+disp('Complete.')
 
 end
 
