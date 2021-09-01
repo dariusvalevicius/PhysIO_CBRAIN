@@ -19,7 +19,7 @@ The output is the multiple_regressors.txt and diagnostic plots from PhysIO, as w
 
 For example...
 
-![for example...](spin001_resting_post1_var_reduced.png)
+![for example...](figures/spin001_resting_post1_var_reduced.png)
 
 The shell script requires the PhysIO codebase (get [here](https://github.com/translationalneuromodeling/tapas)) to be copied into the project directory.
 
