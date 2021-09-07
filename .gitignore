@@ -1,11 +1,7 @@
 code/*
-input/*
-output/*
-results/*
-physio_cli_fmri/*
 *.prj
 *.asv
-compiled_tool/*
-imagetestdocker/*
 sub-03/*
 single-run-input/*
+standalone_app/tapasphysiodocker/*
+standalone_app/single-run-input/*

@@ -57,3 +57,11 @@ Compile app and dockerize:
 mcc -m physio_cli_fmri.m -a ./code -o tapasphysio -d standalone_app
 
 compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio', 'EntryPoint', 'tapasphysio')
+
+
+
+
+putting it all together: bosh exec (not working yet)
+
+bosh exec -s launch cbrain_task_descriptors/tapasphysio.json -v ~/Documents/PhysIO_CBRAIN:/mnt/data --imagepath docker://dvalev/tapasphysio --force-docker invocation/inv.json
+
