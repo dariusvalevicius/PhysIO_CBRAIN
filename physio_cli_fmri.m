@@ -67,8 +67,8 @@ function physio_cli_fmri(in_dir, use_case, correct, varargin)
 disp(pwd);
 disp(struct2table(dir()));
 
-% Add PhysIO code to path
-addpath(genpath('code'));
+% Add PhysIO code to path (Does not work with compiler)
+% addpath(genpath('code'));
 
 %% Input Parser
 
@@ -292,8 +292,8 @@ elseif strcmp(use_case, 'Single_run')
     
     
     % Get fMRI dimensions
-    fmri_j = double(niftiread(string(fmri_filename)));
-    sz = size(fmri_j);
+    fmri_data = double(niftiread(string(fmri_filename)));
+    sz = size(fmri_data);
     Nslices = sz(3);
     Nframes = sz(4);
     
@@ -305,7 +305,7 @@ elseif strcmp(use_case, 'Single_run')
     
     % Run image correction
     if(strcmpi(correct, 'yes'))
-        performCorrection(fmri_filename, fmri_j, physio);
+        performCorrection(fmri_filename, fmri_data, physio);
     end
     
     
@@ -358,9 +358,11 @@ function performCorrection(fmri_filename, fmri_data, physio)
 
     disp('Correcting fMRI data...');
 
+    disp('Loading regressors...');
     % Load multiple regressors file
     regressors = load(fullfile(physio.save_dir, 'multiple_regressors.txt'));
 
+    disp('Running Correction...');
     % Run correction
     [fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors);
 
@@ -386,33 +388,46 @@ end
 function [fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors)
 % Correction algorithm adapted from Catie Chang
 
+disp('Getting dimensions...');
 % Get dimensions
 x = size(fmri_data);
 nslices = x(3);
 nframes = x(4);
 
+disp('Arranging label...');
 % Arrange data label
 Y = reshape(fmri_data, x(1)*x(2)*nslices, nframes)';
 t = (1:nframes)';
 
+disp('Setting up design matrix...');
 % Set design matrix
 % Uses intercept (1), time, time squared, and PhysIO regressors
 XX = [t, t.^2, regressors];
 XX = [ones(size(XX,1),1), zscore(XX)];
 
+disp('Regressing...');
 % Compute model betas and subtract beta-weighted regressors from input fmri
 % data to correct
 Betas = XX\Y;
 Y_corr = Y - XX(:,4:end)*Betas(4:end,:);
+
+disp('Correcting...');
 fmri_corrected = reshape(Y_corr', x(1), x(2), nslices, nframes);
 
+disp('Computing pct var reduced...');
 % Compute pct var reduced (3D double)
+disp('Get raw fmri variance');
+disp(x);
 var_raw = var(fmri_data, 0, 4);
+disp('Get corrected fmri variance');
+disp(size(fmri_corrected));
 var_corrected = var(fmri_corrected, 0, 4);
+disp('Get difference in variance');
 pct_var_reduced = (var_raw - var_corrected) ./ var_raw;
 
+disp('Creating Mask...')
 mask = createMask(fmri_data);
-%niftiwrite(mask, 'mask_test.nii');
+% niftiwrite(mask, 'mask_test.nii');
 pct_var_reduced = pct_var_reduced .* mask;
 
 

@@ -3,8 +3,8 @@
   "name": "PhysIO_Tapas",
   "description": "Tapas Physio: Physiological noise correction for fMRI",
   "author": "Lars Kasper, Zurich University and ETH Zurich",
-  "descriptor-url": "https://github.com/MontrealSergiy/cbrain_plugins_physiophilips/blob/master/cbrain_task_descriptors/tapasphysio.json",
-  "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/physiotapas [INDIR] [use_case] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
+  "descriptor-url": "https://github.com/dariusvalevicius/PhysIO_CBRAIN/blob/master/cbrain_task_descriptors/tapasphysio.json",
+  "command-line": "~/Documents/PhysIO_CBRAIN/standalone_app/run_tapasphysio.sh ~/Documents/MATLAB/MATLAB_runtime/v99 [INDIR] [use_case] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
   "inputs": [
     {
       "description": "Input folder for physiological, fMRI and other data.",
@@ -18,7 +18,6 @@
     {
       "description": "You can either specify a BIDS subject directory, in which case every contained fMRI file will be processed by Physio, or you can input a folder with just one fMRI-logfile combination.",
       "value-key": "[use_case]",
-      "command-line-flag": "use_case",
       "optional": false,
       "list": false,
       "value-choices": [
@@ -33,7 +32,6 @@
       "description": "Produce corrected copies of fMRI images.",
       "default-value": "no",
       "value-key": "[correct]",
-      "command-line-flag": "correct",
       "optional": false,
       "list": false,
       "value-choices": [
@@ -43,15 +41,6 @@
       "type": "String",
       "id": "correct",
       "name": "Correct noise"
-    },
-    {
-      "description": "The results are saved to folder obtained by adding this prefix to the input folder name",
-      "default-value": "Results_",
-      "value-key": "[OUT]",
-      "optional": false,
-      "type": "String",
-      "id": "out",
-      "name": "Output folder prefix"
     },
     {
       "id": "log_files__vendor",
@@ -231,7 +220,6 @@
       "id": "scan_timing__sync__grad_direction",
       "name": "Gradient Direction",
       "value-key": "[scan_timing.sync.grad_direction]",
-      "default-value": "y",
       "type": "String",
       "description": "Must choose x,y, or z.",
       "value-choices": [
@@ -246,7 +234,6 @@
       "id": "scan_timing__sync__zero",
       "name": "Gradient Zero",
       "value-key": "[scan_timing.sync.zero]",
-      "default-value": 0.5,
       "type": "Number",
       "description": "Gradient amplitude threshold below which values will be set to zero.",
       "optional": true,
@@ -256,7 +243,6 @@
       "id": "scan_timing__sync__slice",
       "name": "Gradient Slice",
       "value-key": "[scan_timing.sync.slice]",
-      "default-value": 0.6,
       "type": "Number",
       "description": "Gradient amplitude threshold for start of new slice.",
       "optional": true,
@@ -266,7 +252,6 @@
       "id": "scan_timing__sync__vol",
       "name": "Gradient Volume",
       "value-key": "[scan_timing.sync.vol]",
-      "default-value": null,
       "type": "Number",
       "description": "Gradient amplitude threshold for start of new volume.\nOptional parameter - can be used if volume start indicated by higher gradient amplitude.\nMutually exclusive with use of vol_spacing parameter.",
       "optional": true,
@@ -276,7 +261,6 @@
       "id": "scan_timing__sync__vol_spacing",
       "name": "Gradient Volume Spacing",
       "value-key": "[scan_timing.sync.vol_spacing]",
-      "default-value": null,
       "type": "Number",
       "description": "Gradient amplitude threshold for start of new volume.\nOptional parameter - can be used if volume start indicated by higher gradient amplitude.\nMutually exclusive with use of vol_spacing parameter.",
       "optional": true,
@@ -293,7 +277,7 @@
         "ECG",
         "ECG_raw",
         "OXY",
-        "PPU"
+        "PPU_WiFi"
       ],
       "optional": true,
       "command-line-flag": "preproc.cardiac.modality"
@@ -308,13 +292,15 @@
       "value-choices": [
         "no",
         "yes"
-      ]
+      ],
+      "optional": true,
+      "command-line-flag": "preproc.cardiac.filter.include"
     },
     {
       "id": "preproc__cardiac__filter__type",
       "name": "Filter Type",
       "value-key": "[preproc.cardiac.filter.type]",
-      "default-value": "cheby2",
+      "default-value": "butter",
       "type": "String",
       "description": "Which infinite impulse response filter shall be used?\n'Chebychev Type II (cheby2)': Chebychev Type II filter, use for steep transition from start to stop band\n'Butterworth (butter)': Butterworth filter, standard filter with maximally flat passband (Infinite impulse response), but stronger ripples in transition band",
       "value-choices": [
@@ -343,10 +329,6 @@
       "id": "preproc__cardiac__filter__stopband",
       "name": "Filter Stopband",
       "value-key": "[preproc.cardiac.filter.stopband]",
-      "default-value": [
-        0.3,
-        9
-      ],
       "type": "Number",
       "description": "[f_min, f_max] frequency interval in Hz of all frequencies, such that frequencies outside this band should definitely NOT pass the filter.\nNOTE: only relevant for 'cheby2' filter type.\nIf empty, and passband is empty, no fitlering is performed.\nIf empty, but passband exists, stopband interval is 10% increased passband interval.",
       "optional": true,
@@ -419,7 +401,6 @@
       "id": "preproc__cardiac__posthoc_cpulse_select__file",
       "name": "Post-Hoc Selection File",
       "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
-      "default-value": "",
       "type": "String",
       "description": "Filename where cardiac pulses are saved after manual picking.",
       "optional": true,
@@ -742,14 +723,10 @@
       "id": "model__movement__censoring_threshold",
       "name": "Movement Censoring Outlier Threshold",
       "value-key": "[model.movement.censoring_threshold]",
-      "default-value": [
-        0.5
-      ],
+      "default-value": 0.5,
       "type": "Number",
       "description": "Threshold, above which a stick ('spike') regressors is created for corresponding outlier volume exceeding threshold.",
       "optional": true,
-      "list": true,
-      "list-separator": ",",
       "command-line-flag": "model.movement.censoring_threshold"
     },
     {
@@ -782,7 +759,7 @@
     {
       "id": "verbose__level",
       "name": "Verbose Level",
-      "value-key": "verbose.level]",
+      "value-key": "[verbose.level]",
       "default-value": 2,
       "type": "Number",
       "description": "Determines how many figures shall be generated to follow the workflow of the toolbox and whether the graphical output shall be saved.\n0 = No graphical output\n1 = Main plots\n2 = Debugging plots\n3 = All plots",
@@ -907,8 +884,8 @@
       "list": false,
       "id": "output",
       "value-key": "[OUTDIR]",
-      "optional": false,
-      "path-template": "[OUT][INDIR]",
+      "optional": true,
+      "path-template": "[OUTDIR]",
       "name": "Output folder"
     }
   ],

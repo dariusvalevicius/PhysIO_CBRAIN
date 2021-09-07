@@ -34,3 +34,26 @@ physio_cli_fmri('single-run-input', ...
 		'scan_timing.sqpar.Ndummies', '0', ...
 		'scan_timing.sqpar.onset_slice', '22', ...
 		'preproc.cardiac.modality', 'PPU_WiFi')
+		
+./run_tapasphysio.sh ~/Documents/MATLAB/MATLAB_runtime/v99 single-run-input Single_run yes log_files.vendor Philips scan_timing.sqpar.TR 0.7 scan_timing.sqpar.Ndummies 0 scan_timing.sqpar.onset_slice 22 preproc.cardiac.modality PPU_WiFi
+	
+./run_tapasphysio.sh ~/Documents/MATLAB/MATLAB_runtime/v99 'single-run-input' 'Single_run' 'yes' 'log_files.vendor' 'Philips' 'scan_timing.sqpar.TR' '0.7' 'scan_timing.sqpar.Ndummies' '0' 'scan_timing.sqpar.onset_slice' '22' 'preproc.cardiac.modality' 'PPU_WiFi'
+
+tapasphysio single-run-input Single_run yes log_files.vendor Philips scan_timing.sqpar.TR 0.7 scan_timing.sqpar.Ndummies 0 scan_timing.sqpar.onset_slice 22 preproc.cardiac.modality PPU_WiFi
+
+
+
+Run docker image:
+
+docker run -v ~/Documents/PhysIO_CBRAIN:/mnt/data dvalev/tapasphysio /mnt/data/single-run-input Single_run yes log_files.vendor Philips scan_timing.sqpar.TR 0.7 scan_timing.sqpar.Ndummies 0 scan_timing.sqpar.onset_slice 22 preproc.cardiac.modality PPU_WiFi
+
+sudo singularity build tapasphysio.sif docker://dvalev/tapasphysio:latest
+
+	
+		
+		
+Compile app and dockerize:
+
+mcc -m physio_cli_fmri.m -a ./code -o tapasphysio -d standalone_app
+
+compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio', 'EntryPoint', 'tapasphysio')
