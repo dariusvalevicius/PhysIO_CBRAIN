@@ -24,7 +24,7 @@
             "value-key": "[OUTDIR]",
             "optional": false,
             "list": false,
-            "type": "File",
+            "type": "String",
             "id": "out_dir",
             "name": "Output folder"
         },
