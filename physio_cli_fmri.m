@@ -1,4 +1,4 @@
-function physio_cli_fmri(in_dir, use_case, correct, varargin)   
+function physio_cli_fmri(in_dir, out_dir, use_case, correct, varargin)   
 %% A command line wrapper for the main entry function 
 % The main purpose of this script is integraton to CBRAIN yet it 
 % can be used with other frameworks as well, or compilation so tool can be used
@@ -76,7 +76,7 @@ p = inputParser;
 p.KeepUnmatched = true;
 
 addRequired(p, 'in_dir');
-%addRequired(p, 'save_dir');
+addRequired(p, 'out_dir');
 
 addRequired(p, 'use_case');
 
@@ -84,7 +84,7 @@ addRequired(p, 'use_case');
 %addRequired(p, 'fmri_data');   %, @isfile);
 addRequired(p, 'correct');
 
-parse(p, in_dir, use_case, correct);
+parse(p, in_dir, out_dir, use_case, correct);
 
 
 %% Create default parameter structure with all fields
@@ -212,7 +212,7 @@ if strcmp(use_case, 'BIDS_subject_folder')
             fmri_filename = string(fullfile(subject_folder, s, 'func', j));
 
             % Set save dir and logfile params
-            physio.save_dir = fullfile(subject_folder, s, 'func', save_foldername);
+            physio.save_dir = fullfile(out_dir, save_foldername);
 
             logfile = fullfile(subject_folder, s, 'func', logfile);
             physio.log_files.cardiac = logfile;
@@ -284,7 +284,7 @@ elseif strcmp(use_case, 'Single_run')
     fmri_filename = fullfile(in_dir, fmri_filename);
     
     % Set save dir and logfile params
-    physio.save_dir = fullfile(in_dir, save_foldername);
+    physio.save_dir = fullfile(out_dir, save_foldername);
     
     logfile = fullfile(in_dir, logfile);
     physio.log_files.cardiac = logfile;

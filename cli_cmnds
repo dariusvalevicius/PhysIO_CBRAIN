@@ -27,6 +27,7 @@ physio_cli_fmri('sub-03', ...
 		'preproc.cardiac.modality', 'PPU_WiFi')
 		
 physio_cli_fmri('single-run-input', ...
+		'test_results', ...
 		'Single_run', ...
 		'yes', ...
 		'log_files.vendor', 'Philips', ...
@@ -45,7 +46,7 @@ tapasphysio single-run-input Single_run yes log_files.vendor Philips scan_timing
 
 Run docker image:
 
-docker run -v ~/Documents/PhysIO_CBRAIN:/mnt/data dvalev/tapasphysio /mnt/data/single-run-input Single_run yes log_files.vendor Philips scan_timing.sqpar.TR 0.7 scan_timing.sqpar.Ndummies 0 scan_timing.sqpar.onset_slice 22 preproc.cardiac.modality PPU_WiFi
+docker run -v ~/Documents/PhysIO_CBRAIN:/mnt/data dvalev/tapasphysio /usr/bin/mlrtapp/tapasphysio /mnt/data/single-run-input mnt/data/test_output Single_run yes log_files.vendor Philips scan_timing.sqpar.TR 0.7 scan_timing.sqpar.Ndummies 0 scan_timing.sqpar.onset_slice 22 preproc.cardiac.modality PPU_WiFi
 
 sudo singularity build tapasphysio.sif docker://dvalev/tapasphysio:latest
 
@@ -56,12 +57,11 @@ Compile app and dockerize:
 
 mcc -m physio_cli_fmri.m -a ./code -o tapasphysio -d standalone_app
 
-compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio', 'EntryPoint', 'tapasphysio')
+compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio')
 
 
 
 
-putting it all together: bosh exec (not working yet)
+putting it all together: bosh exec
 
-bosh exec -s launch cbrain_task_descriptors/tapasphysio.json -v ~/Documents/PhysIO_CBRAIN:/mnt/data --imagepath docker://dvalev/tapasphysio --force-docker invocation/inv.json
-
+bosh exec launch -s cbrain_task_descriptors/tapasphysio.json invocation/inv.json

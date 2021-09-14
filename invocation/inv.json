@@ -1,5 +1,6 @@
 {
-    "in_dir": "/mnt/data/single-run-input",
+    "in_dir": "single-run-input",
+    "out_dir": "physio_results",
     "use_case": "Single_run",
     "correct": "yes",
     "log_files__vendor": "BIDS",
