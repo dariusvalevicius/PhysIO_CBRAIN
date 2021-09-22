@@ -4,7 +4,7 @@
     "description": "Tapas Physio: Physiological noise correction for fMRI",
     "author": "Lars Kasper, Zurich University and ETH Zurich",
     "descriptor-url": "https://github.com/dariusvalevicius/PhysIO_CBRAIN/blob/master/cbrain_task_descriptors/tapasphysio.json",
-    "command-line": "mkdir -p [OUTDIR]; chmod a+x /usr/bin/mlrtapp/tapasphysio [INDIR] [OUTDIR] [use_case] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
+    "command-line": "mkdir -p [OUTDIR]; chmod a+x /usr/bin/mlrtapp/tapasphysio [INDIR] [OUTDIR] [use_case] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.other.input_multiple_regressors] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
     "container-image": {
         "type": "docker",
         "image": "dvalev/tapasphysio:latest"
@@ -226,6 +226,30 @@
                 "gradient_log_auto",
                 "scan_timing_log"
             ],
+            "value-disables": {
+                "nominal": [
+                    "scan_timing__sync__grad_direction",
+                    "scan_timing__sync__zero",
+                    "scan_timing__sync__slice",
+                    "scan_timing__sync__vol",
+                    "scan_timing__sync__vol_spacing"
+                ],
+                "gradient_log": [],
+                "gradient_log_auto": [
+                    "scan_timing__sync__grad_direction",
+                    "scan_timing__sync__zero",
+                    "scan_timing__sync__slice",
+                    "scan_timing__sync__vol",
+                    "scan_timing__sync__vol_spacing"
+                ],
+                "scan_timing_log": [
+                    "scan_timing__sync__grad_direction",
+                    "scan_timing__sync__zero",
+                    "scan_timing__sync__slice",
+                    "scan_timing__sync__vol",
+                    "scan_timing__sync__vol_spacing"
+                ]
+            },
             "optional": true,
             "command-line-flag": "scan_timing.sync.method"
         },
@@ -306,6 +330,14 @@
                 "no",
                 "yes"
             ],
+            "value-disables": {
+                "no": [
+                    "preproc__cardiac__filter__type",
+                    "preproc__cardiac__filter__passband",
+                    "preproc__cardiac__filter__stopband"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "preproc.cardiac.filter.include"
         },
@@ -362,6 +394,20 @@
                 "manual",
                 "load"
             ],
+            "value-disables": {
+                "auto_matched": [],
+                "load_from_logfile": [
+                    "preproc__cardiac__initial_cpulse_select__min",
+                    "preproc__cardiac__initial_cpulse_select__file",
+                    "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm"
+                ],
+                "manual": [
+                    "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm"
+                ],
+                "load": [
+                    "preproc__cardiac__initial_cpulse_select__max_heart_rate_bpm"
+                ]
+            },
             "optional": true,
             "command-line-flag": "preproc.cardiac.initial_cpulse_select.method"
         },
@@ -407,6 +453,18 @@
                 "manual",
                 "load"
             ],
+            "value-disables": {
+                "off": [
+                    "preproc__cardiac__posthoc_cpulse_select__file",
+                    "preproc__cardiac__posthoc_cpulse_select__percentile",
+                    "preproc__cardiac__posthoc_cpulse_select__upper_thresh",
+                    "preproc__cardiac__posthoc_cpulse_select__lower_thresh"
+                ],
+                "manual": [],
+                "load": [
+                    "preproc__cardiac__posthoc_cpulse_select__file"
+                ]
+            },
             "optional": true,
             "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.method"
         },
@@ -516,6 +574,14 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__retroicor__order__c",
+                    "model__retroicor__order__r",
+                    "model__retroicor__order__cr"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.retroicor.include"
         },
@@ -563,6 +629,12 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__rvt__delays"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.rvt.include"
         },
@@ -587,6 +659,12 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__hrv__delays"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.hrv.include"
         },
@@ -611,6 +689,17 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__noise_rois__fmri_files",
+                    "model__noise_rois__roi_files",
+                    "model__noise_rois__force_coregister",
+                    "model__noise_rois__thresholds",
+                    "model__noise_rois__n_voxel_crop",
+                    "model__noise_rois__n_components"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.noise_rois.include"
         },
@@ -689,6 +778,15 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__movement__file_realignment_parameters",
+                    "model__movement__order",
+                    "model__movement__censoring_method",
+                    "model__movement__censoring_threshold"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.movement.include"
         },
@@ -753,21 +851,22 @@
                 "yes",
                 "no"
             ],
+            "value-disables": {
+                "no": [
+                    "model__other__input_multiple_regressors"
+                ],
+                "yes": []
+            },
             "optional": true,
             "command-line-flag": "model.other.include"
         },
         {
             "id": "model__other__input_multiple_regressors",
             "name": "Input Multiple Regressors Files",
-            "value-key": "[model.other.include]",
-            "default-value": "no",
+            "value-key": "[model.other.input_multiple_regressors]",
             "type": "String",
-            "value-choices": [
-                "yes",
-                "no"
-            ],
             "optional": true,
-            "command-line-flag": "model.other.include"
+            "command-line-flag": "model.other.input_multiple_regressors"
         },
         {
             "id": "verbose__level",

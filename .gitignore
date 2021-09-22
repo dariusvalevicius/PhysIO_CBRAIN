@@ -1,9 +1,3 @@
+ds*/*
 code/*
-*.prj
-*.asv
-sub-03/*
-single-run-input/*
-standalone_app/tapasphysiodocker/*
-standalone_app/single-run-input/*
-results/*
-input/*
+ds003477/*
