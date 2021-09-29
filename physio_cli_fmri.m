@@ -125,65 +125,77 @@ for i = 1:size(fields, 2)
 end
 
 
-%% postpone figure generation in first run - helps with compilation
-
-if isfield(physio, 'verbose') && isfield(physio.verbose, 'level')
-     verbose_level = physio.verbose.level;
-     physio.verbose.level = 0;
-     if isfield(physio, 'fig_output_file')
-         fig_output_file = physio.verbose.fig_output_file;
-     else
-         fig_output_file = 'PhysIO_output.png'; 
-     end    
-else
-  verbose_level = 0;
-end 
-
-
-
 %% Scan subject directory and perform correction on each fMRI file
 
 
 % Set physlogfile suffix based on vendor
 vendor = physio.log_files.vendor;
 
-phys_suffix = '';
+phys_ext = '';
+cardiac_marker = '';
+resp_marker = '';
+
 
 switch vendor
     case 'BIDS'
-        phys_suffix = '.tsv.gz';
+        phys_ext = '.tsv.gz';
+        n_logfiles = 1;
     case 'Philips'
-        phys_suffix = '.log';
+        phys_ext = '.log';
+        n_logfiles = 1;
     case 'Biopac_Txt'
-        phys_suffix = '.txt';
+        phys_ext = '.txt';
+        n_logfiles = 1;
     case 'Biopac_Mat'
-        phys_suffix = '.mat';
+        phys_ext = '.mat';
+        n_logfiles = 1;
     case 'BrainProducts'
-        phys_suffix = '.eeg';
+        phys_ext = '.eeg';
+        n_logfiles = 1;
     case 'Custom'
-        phys_suffix = '.txt';
+        phys_ext = '.txt';
+        n_logfiles = 2;
+        cardiac_marker = 'card';
+        resp_marker = 'resp';
         % This one will not work until I write code for multiple physio files
         % to be found (one for cardiac and one for resp)
+    case 'GE'
+        phys_ext = '.txt';
+        n_logfiles = 2;
+        cardiac_marker = 'ECGData';
+        resp_marker = 'RespData';
+    case 'Siemens'
+        % ???? many sub cases
 end
 
 
 
 if strcmp(use_case, 'BIDS_subject_folder')
 
-        % From input/subject folder
-        % Get every nifti in func
-        % and associated physlogfiles
-        % based on vendor
-        %   BIDS: .tsv.gz
-        %   Philips: .log
-        %   
-        % Currently implemented for BIDS and Philips only    
+    % From input/subject folder
+    % Get every nifti in func
+    % and associated physlogfiles
+    % based on vendor
+    %   BIDS: .tsv.gz
+    %   Philips: .log
+    %   
+    % Currently implemented for BIDS and Philips only    
 
-    % Get session directories
-
+        
     subject_folder = in_dir;
-    sessions = dir(subject_folder);
-    sessions = {sessions(3:end).name};
+    
+    % Get first level subdirectory
+    first_lvl = dir(subject_folder);
+    first_lvl = {first_lvl(3:end).name};
+    
+    % If multiple sessions, use those
+    % Else set sessions to 1x1 empty string cell array. This will be ignored in
+    % fullfile() calls
+    if any(contains(first_lvl, 'ses'))
+        sessions = first_lvl;
+    else
+        sessions = {''};
+    end
 
     disp('Iterating through fMRI files in subject folder.');
     
@@ -196,7 +208,12 @@ if strcmp(use_case, 'BIDS_subject_folder')
 
         % Get fMRI files
         fmri_files = func(contains(func, '.nii.gz'));
-
+        
+        if isempty(fmri_files)
+            msg = 'Did not find any fMRI files in func directory.';
+            error(msg)
+        end
+        
         % For every fMRI file
         % Try to find corresponding physio logfile
         % Corresponding to run #
@@ -206,39 +223,36 @@ if strcmp(use_case, 'BIDS_subject_folder')
 
             disp(append('Correcting: ', j{:}))
             
-            % Get run number            
-            if contains(j, 'run-')
-                run_num = extractAfter(j, 'run-');
-                run_num = run_num{:}(1);
-            else
-                disp('This fMRI file does not correspond to a run. Skipping.')
-                disp('Make sure that fMRI files contain the regular expression *run*.nii.gz');
-                continue;
+            % Get file sub/ses/task string
+            
+            run_string = extractBefore(j{:}, '_bold');
+            
+            % Find logfile
+            
+            index = regexp(func, append(run_string, '.*', phys_ext));
+            
+            logfile = func(~cellfun(@isempty, index));
+            
+            if isempty(logfile)
+                msg = append('Logfile for fMRI run ', j{:}, ' not found.');
+                error(msg);
             end
             
-
-            % Find logfile with run number
-
-            wildcard = append('.*run-', run_num, '.*', phys_suffix);
-            
-            index = regexp(func, wildcard);
-
-            logfile = string(func(~cellfun(@isempty, index)));
-
             % Set PhysIO params
-
+            
             save_foldername = append(extractBefore(j, '.nii.gz'), '_physio_results');
 
-            % Unzip and set fmri param
+            % Set fmri param
             fmri_filename = string(fullfile(subject_folder, s, 'func', j));
 
             % Set save dir and logfile params
             physio.save_dir = fullfile(out_dir, save_foldername);
-
-            logfile = fullfile(subject_folder, s, 'func', logfile);
+            
+            logfile = fullfile(in_dir, s, 'func', logfile);
             physio.log_files.cardiac = logfile;
             physio.log_files.respiration = logfile;
 
+            
             % Refresh some params (they would stack otherwise)
             % NOTE: the fact that this is needed may signal that other
             % parameters may break/stack when physio is looped. Keep an eye out,
@@ -246,8 +260,13 @@ if strcmp(use_case, 'BIDS_subject_folder')
             physio.model.output_physio = 'physio.mat';
             physio.model.output_multiple_regressors = 'multiple_regressors.txt';
 
-            % Get fMRI dimensions
-            fmri_j = double(niftiread(string(fmri_filename)));
+            % Get fMRI dimensions  
+            try
+                fmri_j = double(niftiread(string(fmri_filename)));
+            catch ME
+                warning('Problem reading fMRI file. Please verify that file is uncorrupted and in correct format.');
+                rethrow(ME)
+            end   
             sz = size(fmri_j);
             Nslices = sz(3);
             Nframes = sz(4);
@@ -255,11 +274,12 @@ if strcmp(use_case, 'BIDS_subject_folder')
             physio.scan_timing.sqpar.Nslices = Nslices;
             physio.scan_timing.sqpar.Nscans = Nframes;
             
-            % Figure out what is going on with these figs!!
-            physio.verbose.level = 0;
+            physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
 
             % Run PhysIO
-            physio = run_physio(physio, verbose_level, fig_output_file);
+                disp('Creating PhysIO regressors...');
+                physio = tapas_physio_main_create_regressors(physio);
+                disp('Complete.');
 
             % Run image correction
             if(strcmpi(correct, 'yes'))
@@ -278,11 +298,9 @@ elseif strcmp(use_case, 'Single_run')
     file_inputs = {file_inputs(3:end).name};
 
     fmri_filename = string(file_inputs(contains(file_inputs, '.nii.gz')));
-
     
     % Find logfile
-    logfile = string(file_inputs(contains(file_inputs, phys_suffix)));
-    
+    logfile = string(file_inputs(contains(file_inputs, phys_ext)));
     
     % Set PhysIO params
     
@@ -298,7 +316,6 @@ elseif strcmp(use_case, 'Single_run')
     physio.log_files.cardiac = logfile;
     physio.log_files.respiration = logfile;
     
-    
     % Get fMRI dimensions
     fmri_data = double(niftiread(string(fmri_filename)));
     sz = size(fmri_data);
@@ -308,9 +325,15 @@ elseif strcmp(use_case, 'Single_run')
     physio.scan_timing.sqpar.Nslices = Nslices;
     physio.scan_timing.sqpar.Nscans = Nframes;
     
-    % Run PhysIO
-    physio = run_physio(physio, verbose_level, fig_output_file);
+    physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
+
     
+    % Run PhysIO
+        disp('Creating PhysIO regressors...');
+        physio = tapas_physio_main_create_regressors(physio);
+        disp('Complete.');
+
+
     % Run image correction
     if(strcmpi(correct, 'yes'))
         performCorrection(fmri_filename, fmri_data, physio);
@@ -322,26 +345,6 @@ end
 
 end
 
-
-function [physio] = run_physio(physio, verbose_level, fig_output_file)
-
-% Run physiological recording preprocessing and noise modeling
-
-disp('Creating PhysIO regressors...');
-physio = tapas_physio_main_create_regressors(physio);
-disp('Complete.');
-
-disp('Building figures...');
-% Build figures
-if verbose_level
-    physio.verbose.fig_output_file = fig_output_file; % has to reset, the old value is distorted
-    physio.verbose.level = verbose_level;
-    % Suspending for now
-    %tapas_physio_review(physio);
-end
-disp('Complete.');
-
-end
 
 function [S] = merge_struct(S_1, S_2)
 % update the first struct with values and keys of the second and returns the result
@@ -364,31 +367,31 @@ end
 function performCorrection(fmri_filename, fmri_data, physio)
 
 
-    disp('Correcting fMRI data...');
+disp('Correcting fMRI data...');
 
-    disp('Loading regressors...');
-    % Load multiple regressors file
-    regressors = load(fullfile(physio.save_dir, 'multiple_regressors.txt'));
+disp('Loading regressors...');
+% Load multiple regressors file
+regressors = load(fullfile(physio.save_dir, 'multiple_regressors.txt'));
 
-    disp('Running Correction...');
-    % Run correction
-    [fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors);
+disp('Running Correction...');
+% Run correction
+[fmri_corrected, pct_var_reduced] = correct_fmri(fmri_data, regressors);
 
-    disp('Correction complete.');
-    fprintf('Maximum variance reduced(diagnostic): %d\n', max(pct_var_reduced, [], 'all'));
+disp('Correction complete.');
+fprintf('Maximum variance reduced(diagnostic): %d\n', max(pct_var_reduced, [], 'all'));
 
-    disp('Writing niftis...');
+disp('Writing niftis...');
 
-    % Create output files
-    [~,fmri_name_only,ext] = fileparts(fmri_filename);
-    fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii.gz');
-    fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
-    
-    niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
-    niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
-    %gzip(strcat(physio.save_dir, '/fmri_corrected.nii'));
+% Create output files
+[~,fmri_name_only,ext] = fileparts(fmri_filename);
+fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii.gz');
+fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
 
-    disp('Complete.');
+niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
+niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
+%gzip(strcat(physio.save_dir, '/fmri_corrected.nii'));
+
+disp('Complete.');
 
 
 end
@@ -514,9 +517,9 @@ physio.verbose.level = 2;
 physio.verbose.process_log = cell(0, 1);
 physio.verbose.fig_handles = zeros(1, 0);
 physio.verbose.use_tabs = false;
-physio.verbose.show_figs = true;
-physio.verbose.save_figs = false;
-physio.verbose.close_figs = false;
+physio.verbose.show_figs = false; % Changed from templates
+physio.verbose.save_figs = true; % Changed from template
+physio.verbose.close_figs = true; % Changed from template
 physio.ons_secs.c_scaling = 1;
 physio.ons_secs.r_scaling = 1;
 
