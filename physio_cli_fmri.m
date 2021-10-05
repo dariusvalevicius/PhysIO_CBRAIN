@@ -98,7 +98,7 @@ addRequired(p, 'fmri_file');
 
 addRequired(p, 'correct');
 
-parse(p, in_dir, out_dir, use_case, fmri_file, correct);
+parse(p, use_case, in_dir, out_dir, fmri_file, correct);
 
 
 %% Create default parameter structure with all fields
