@@ -1,13 +1,12 @@
 {
-    "in_dir": "single-run-input",
-    "out_dir": "physio_results",
-    "use_case": "Single_run",
+    "use_case": "bids_subject_folder",
+    "in_dir": "ds003477/sub-03",
+    "out_dir": "physio_results_bids",
+    "fmri_file": "none",
     "correct": "yes",
     "log_files__vendor": "BIDS",
-    "scan_timing__sqpar__Nslices": 44,
     "scan_timing__sqpar__TR": 0.7,
     "scan_timing__sqpar__Ndummies": 0,
-    "scan_timing__sqpar__Nscans": 342,
     "scan_timing__sqpar__onset_slice": 22,
     "preproc__cardiac__modality": "PPU_WiFi"
 }

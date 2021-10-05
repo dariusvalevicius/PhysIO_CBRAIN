@@ -1,0 +1,14 @@
+{
+    "use_case": "manual_input",
+    "in_dir": "none",
+    "out_dir": "physio_results_manual",
+    "fmri_file": "sub-03_ses-1_task-face_run-1_bold.nii.gz",
+    "correct": "yes",
+    "log_files__vendor": "Philips",
+    "log_files__cardiac": "sub-03_ses-1_task-face_run-1_recording-respcardiac_physio.log",
+    "log_files__respiration": "sub-03_ses-1_task-face_run-1_recording-respcardiac_physio.log",
+    "scan_timing__sqpar__TR": 0.7,
+    "scan_timing__sqpar__Ndummies": 0,
+    "scan_timing__sqpar__onset_slice": 22,
+    "preproc__cardiac__modality": "PPU_WiFi"
+}
