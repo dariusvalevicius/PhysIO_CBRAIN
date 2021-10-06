@@ -1,3 +1,7 @@
 ds*/*
-code/*
 ds003477/*
+ds003477/.git/*
+single-run-input/*
+*.asv
+*.log
+*.nii.gz
