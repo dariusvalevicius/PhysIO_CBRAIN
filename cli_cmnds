@@ -89,7 +89,7 @@ Compile app and dockerize:
 
 mcc -m physio_cli_fmri.m -a ./tapas_physio_code -o tapasphysio -d standalone_app
 
-compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio', 'EntryPoint', "chmod a+x /usr/bin/mlrtapp/tapasphysio")
+compiler.package.docker('tapasphysio', 'requiredMCRProducts.txt', 'ImageName', 'tapasphysio', 'ExecuteDockerBuild', 'Off')
 
 
 
