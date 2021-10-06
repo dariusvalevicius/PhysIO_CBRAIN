@@ -11,7 +11,7 @@
     },
     "inputs": [
         {
-            "description": "Options for input formats.\nbids_subject_folder: Input the top level folder for a single subject. Must follow BIDS conventions. All contained fMRI runs will be processed.\nsingle_run_folder: Folder containing one run of data.\nmanual_input: Loose files as input. Must specify fMRI file and physlog files.",
+            "description": "Options for input formats.\nbids_subject_folder: Input the top level folder for a single subject. Must follow BIDS conventions. All contained fMRI runs will be processed.\nsingle_run_folder: Folder containing one run of data.\nmanual_input: Loose files as input. Must specify fMRI file and physlog files.\nWARNING: BIDS folder and single run folder options are currently experimental and may fail, especially with vendors other than BIDS and Philips. Only vendors which produce a single logfile for both resp+cardiac are supported at the moment.",
             "value-key": "[use_case]",
             "optional": false,
             "list": false,
