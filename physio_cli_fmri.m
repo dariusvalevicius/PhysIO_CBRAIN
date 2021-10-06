@@ -263,12 +263,10 @@ switch use_case
                 physio.scan_timing.sqpar.Nscans = Nframes;
 
                 physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
-
-                % Run PhysIO
-                    disp('Creating PhysIO regressors...');
-                    physio = tapas_physio_main_create_regressors(physio);
-                    disp('Complete.');
-
+                
+                % Run physio
+                physio = run_physio(physio);
+                
                 % Run image correction
                 if(strcmpi(correct, 'yes'))
                     performCorrection(fmri_filename, fmri_j, physio);
@@ -331,11 +329,8 @@ switch use_case
 
         physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
 
-        % Run PhysIO
-        disp('Creating PhysIO regressors...');
-        physio = tapas_physio_main_create_regressors(physio);
-        disp('Complete.');
-
+        % Run physio
+        physio = run_physio(physio);
 
         % Run image correction
         if(strcmpi(correct, 'yes'))
@@ -366,22 +361,66 @@ switch use_case
 
         physio.verbose.fig_output_file = append(fmri_file, '_fig_output.ps');
         
-        % Run PhysIO
-        disp('Creating PhysIO regressors...');
-        physio = tapas_physio_main_create_regressors(physio);
-        disp('Complete.');
-
+        % Run physio
+        physio = run_physio(physio);
+                
         % Run image correction
         if(strcmpi(correct, 'yes'))
             performCorrection(fmri_file, fmri_data, physio);
         end
-        
     
 end
 
 
 end
 
+
+function [physio] = run_physio(physio)
+
+% postpone figs
+disp('Postponing figure generation...');
+[physio, verbose_level, fig_output_file] = postpone_figures(physio);
+
+% Run PhysIO
+disp('Creating PhysIO regressors...');
+physio = tapas_physio_main_create_regressors(physio);
+disp('Complete.');
+
+% generate figures without rendering
+disp('Generating and saving figures...');
+generate_figures(physio, verbose_level, fig_output_file);
+        
+end
+
+
+function [physio, verbose_level, fig_output_file] = postpone_figures(physio)
+
+% postpone figure generation in first run - helps with compilation
+% relies on certain physio.verbose parameters - see setDefaults() below
+if isfield(physio, 'verbose') && isfield(physio.verbose, 'level')
+     verbose_level = physio.verbose.level;
+     physio.verbose.level = 0;
+     if isfield(physio.verbose, 'fig_output_file')
+         fig_output_file = physio.verbose.fig_output_file;
+     else
+         fig_output_file = 'PhysIO_output.png'; 
+     end    
+else
+  verbose_level = 0;
+end 
+
+end
+
+function generate_figures(physio, verbose_level, fig_output_file)
+
+% Build figures
+if verbose_level
+  physio.verbose.fig_output_file = fig_output_file; % has to reset, the old value is distorted
+  physio.verbose.level = verbose_level;
+  tapas_physio_review(physio);
+end
+
+end
 
 function [fmri_data, Nslices, Nframes] = load_fmri(fmri_file)
 
@@ -479,10 +518,8 @@ fmri_corrected = reshape(Y_corr', x(1), x(2), nslices, nframes);
 disp('Computing pct var reduced...');
 % Compute pct var reduced (3D double)
 disp('Get raw fmri variance');
-disp(x);
 var_raw = var(fmri_data, 0, 4);
 disp('Get corrected fmri variance');
-disp(size(fmri_corrected));
 var_corrected = var(fmri_corrected, 0, 4);
 disp('Get difference in variance');
 pct_var_reduced = (var_raw - var_corrected) ./ var_raw;
