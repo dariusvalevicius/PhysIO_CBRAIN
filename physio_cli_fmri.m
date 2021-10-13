@@ -1,4 +1,4 @@
-function physio_cli_fmri(use_case, in_dir, out_dir, fmri_file, correct, varargin)   
+function physio_cli_fmri(use_case, out_dir, correct, varargin)   
 %% A command line wrapper for the main entry function 
 % The main purpose of this script is integraton to CBRAIN yet it 
 % can be used with other frameworks as well, or compilation so tool can be used
@@ -86,25 +86,25 @@ p.KeepUnmatched = true;
 
 
 addRequired(p, 'use_case');
-%addOptional(p, 'in_dir', 'none');
+%addParameter(p, 'in_dir', 'none');
 % Not sure how this will work in tandem with boutiques. Setting all to
 % required now, with optional params defaulting to 'none'.
-addRequired(p, 'in_dir');
+%addRequired(p, 'in_dir');
 
 addRequired(p, 'out_dir');
 
-addRequired(p, 'fmri_file');
-%addOptional(p, 'fmri_file', 'none');
+%addRequired(p, 'fmri_file');
+%addParameter(p, 'fmri_file', 'none');
 
 addRequired(p, 'correct');
 
-parse(p, use_case, in_dir, out_dir, fmri_file, correct);
+parse(p, use_case, out_dir, correct);
 
 % Debugging: display inputs
 
-input_msg = ['Use case: ',use_case,', In dir: ',in_dir,', Out dir: ',out_dir,', Fmri file: ',fmri_file,', Correct: ',correct];
+%input_msg = ['Use case: ',use_case,', In dir: ',in_dir,', Out dir: ',out_dir,', Fmri file: ',fmri_file,', Correct: ',correct];
 
-disp(input_msg);
+%disp(input_msg);
 
 
 %% Create default parameter structure with all fields
@@ -134,6 +134,24 @@ for i = 1:size(fields, 2)
     fieldseq = regexp(fields{1, i}, '__', 'split');
     physio = setfield(physio, fieldseq{:}, field_value);
 end
+
+
+%% Set fmri_file and in_dir values (hackey workaround to CBRAIN interface problem)
+% Problem description: File type inputs in CBRAIN cannot have default
+% values. Therefore they can't be passed as positional params, and have to
+% be extracted from varargin.
+
+in_dir = 'none';
+fmri_file = 'none';
+
+if isfield(physio, 'in_dir')
+    in_dir = physio.in_dir;
+end
+if isfield(physio, 'fmri_file')
+    fmri_file = physio.fmri_file;
+end
+
+    
 
 
 %% Scan subject directory and perform correction on each fMRI file
