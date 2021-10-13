@@ -1,6 +1,5 @@
 {
     "use_case": "manual_input",
-    "in_dir": "none",
     "out_dir": "physio_results_manual",
     "fmri_file": "sub-03_ses-1_task-face_run-1_bold.nii.gz",
     "correct": "yes",

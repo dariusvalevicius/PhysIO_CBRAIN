@@ -2,7 +2,6 @@
     "use_case": "single_run_folder",
     "in_dir": "single-run-input",
     "out_dir": "physio_results",
-    "fmri_file": "none",
     "correct": "yes",
     "log_files__vendor": "BIDS",
     "scan_timing__sqpar__TR": 0.7,

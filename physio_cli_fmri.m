@@ -100,6 +100,12 @@ addRequired(p, 'correct');
 
 parse(p, use_case, in_dir, out_dir, fmri_file, correct);
 
+% Debugging: display inputs
+
+input_msg = ['Use case: ',use_case,', In dir: ',in_dir,', Out dir: ',out_dir,', Fmri file: ',fmri_file,', Correct: ',correct];
+
+disp(input_msg);
+
 
 %% Create default parameter structure with all fields
 physio = tapas_physio_new();
@@ -368,6 +374,10 @@ switch use_case
         if(strcmpi(correct, 'yes'))
             performCorrection(fmri_file, fmri_data, physio);
         end
+        
+    otherwise
+        msg = 'No valid use-case selected.';
+        error(msg);
     
 end
 
@@ -428,6 +438,7 @@ function [fmri_data, Nslices, Nframes] = load_fmri(fmri_file)
         fmri_data = double(niftiread(string(fmri_file)));
     catch ME
         warning('Problem reading fMRI file. Please verify that file is uncorrupted and in correct format.');
+        disp(string(fmri_file));
         rethrow(ME)
     end
     sz = size(fmri_data);

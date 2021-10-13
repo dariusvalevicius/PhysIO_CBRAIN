@@ -2,7 +2,6 @@
     "use_case": "bids_subject_folder",
     "in_dir": "ds003477/sub-03",
     "out_dir": "physio_results_bids",
-    "fmri_file": "none",
     "correct": "yes",
     "log_files__vendor": "BIDS",
     "scan_timing__sqpar__TR": 0.7,
