@@ -1,5 +1,5 @@
 {
-    "tool-version": "8.0",
+    "tool-version": "9.0",
     "name": "PhysIO_Tapas",
     "description": "Tapas Physio: Physiological noise correction for fMRI",
     "author": "Lars Kasper, Zurich University and ETH Zurich",
@@ -936,7 +936,8 @@
                 "scan_timing__sync__grad_direction",
                 "scan_timing__sync__zero",
                 "scan_timing__sync__vol",
-                "scan_timing__sync__vol_spacing"
+                "scan_timing__sync__vol_spacing",
+                "scan_timing__sync__slice"
             ],
             "name": "Scan Timing Parameters"
         },
