@@ -73,8 +73,9 @@ function physio_cli_fmri(use_case, out_dir, correct, varargin)
 %DOT = '__'; % to use MATLAP argument parser the dots are replaced with doubleunderscore
 
 % Diagnostic print output
-%disp(pwd);
-%disp(struct2table(dir()));
+disp("PWD and work dir contents:");
+disp(pwd);
+disp(struct2table(dir()));
 
 % Add PhysIO code to path (Does not work with compiler)
 % addpath(genpath('code'));
@@ -225,6 +226,12 @@ switch use_case
             % Get all files in func directory
             func = dir(fullfile(subject_folder, s{:}, 'func'));
             func = {func(3:end).name};
+            
+            % diagnostic: print folder contents
+            disp("In_dir contents:");
+            disp(struct2table(dir(in_dir)));
+            disp("Func contents:");
+            disp(func);
 
             % Get fMRI files
             fmri_files = func(contains(func, '.nii.gz'));
@@ -310,6 +317,12 @@ switch use_case
         % Find fMRI file in input folder
         file_inputs = dir(in_dir);
         file_inputs = {file_inputs(3:end).name};
+        
+        % diagnostic: print folder contents
+        disp("In_dir contents:");
+        disp(struct2table(dir(in_dir)));
+        disp("File_inputs:");
+        disp(file_inputs);
 
         fmri_filename = string(file_inputs(contains(file_inputs, '.nii.gz')));
         if isempty(fmri_filename)
@@ -546,11 +559,11 @@ fmri_corrected = reshape(Y_corr', x(1), x(2), nslices, nframes);
 
 disp('Computing pct var reduced...');
 % Compute pct var reduced (3D double)
-disp('Get raw fmri variance');
+%disp('Get raw fmri variance');
 var_raw = var(fmri_data, 0, 4);
-disp('Get corrected fmri variance');
+%disp('Get corrected fmri variance');
 var_corrected = var(fmri_corrected, 0, 4);
-disp('Get difference in variance');
+%disp('Get difference in variance');
 pct_var_reduced = (var_raw - var_corrected) ./ var_raw;
 
 disp('Creating Mask...')

@@ -26,7 +26,6 @@
         },
         {
             "description": "Input folder for physiological, fMRI and other data.\nFor manual input, leave as 'none'.",
-            "default-value": "none",
             "value-key": "[INDIR]",
             "optional": true,
             "list": false,
@@ -46,7 +45,6 @@
         },
         {
             "description": "fMRI file to process (only for manual input).",
-            "default-value": "none",
             "value-key": "[fmri_file]",
             "optional": true,
             "list": false,
