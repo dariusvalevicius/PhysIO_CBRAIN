@@ -73,9 +73,9 @@ function physio_cli_fmri(use_case, out_dir, correct, varargin)
 %DOT = '__'; % to use MATLAP argument parser the dots are replaced with doubleunderscore
 
 % Diagnostic print output
-disp("PWD and work dir contents:");
-disp(pwd);
-disp(struct2table(dir()));
+% disp("PWD and work dir contents:");
+% disp(pwd);
+% disp(struct2table(dir()));
 
 % Add PhysIO code to path (Does not work with compiler)
 % addpath(genpath('code'));
@@ -206,15 +206,32 @@ switch use_case
         subject_folder = in_dir;
 
         % Get first level subdirectory
-        first_lvl = dir(subject_folder);
-        first_lvl = {first_lvl(3:end).name};
+        
+        first_lvl = get_folder_contents(subject_folder);
+        
+        if ~any(contains(first_lvl, 'ses')) && ~any(contains(first_lvl, 'func'))
+            % folder is unexpectedly nested
+            % Throw error if >1 folder in top level folder.
+            if size(first_lvl, 2) ~= 1
+                msg = 'Invalid folder structure. Check BIDS specifications.';
+                error(msg)
+            end
+            
+            % Set subject_folder to be two levels deep
+            subject_folder = fullfile(in_dir, string(first_lvl));
+            
+            % Recoup folder contents
+            first_lvl = get_folder_contents(subject_folder);
+        end
+        
+            
 
         % If multiple sessions, use those
         % Else set sessions to 1x1 empty string cell array. This will be ignored in
         % fullfile() calls
         if any(contains(first_lvl, 'ses'))
             sessions = first_lvl;
-        else
+        elseif any(contains(first_lvl, 'func'))
             sessions = {''};
         end
 
@@ -224,14 +241,13 @@ switch use_case
         for s = sessions
 
             % Get all files in func directory
-            func = dir(fullfile(subject_folder, s{:}, 'func'));
-            func = {func(3:end).name};
+            func = get_folder_contents(fullfile(subject_folder, s{:}, 'func'));
             
             % diagnostic: print folder contents
-            disp("In_dir contents:");
-            disp(struct2table(dir(in_dir)));
-            disp("Func contents:");
-            disp(func);
+            %disp("In_dir contents:");
+            %disp(struct2table(dir(in_dir)));
+            %disp("Func contents:");
+            %disp(func);
 
             % Get fMRI files
             fmri_files = func(contains(func, '.nii.gz'));
@@ -314,15 +330,32 @@ switch use_case
             error(msg)
         end
         
+        
+        
         % Find fMRI file in input folder
-        file_inputs = dir(in_dir);
-        file_inputs = {file_inputs(3:end).name};
+        file_inputs = get_folder_contents(in_dir);
+        
+        
+        if ~any(contains(file_inputs, '.nii'))
+            % folder is unexpectedly nested
+            % Throw error if >1 folder in top level folder.
+            if size(file_inputs, 2) ~= 1
+                msg = 'Invalid folder structure. Check BIDS specifications.';
+                error(msg)
+            end
+            
+            % Set subject_folder to be two levels deep
+            in_dir = fullfile(in_dir, string(file_inputs));
+            
+            % Recoup folder contents
+            file_inputs = get_folder_contents(in_dir);
+        end
         
         % diagnostic: print folder contents
-        disp("In_dir contents:");
-        disp(struct2table(dir(in_dir)));
-        disp("File_inputs:");
-        disp(file_inputs);
+        %disp("In_dir contents:");
+        %disp(struct2table(dir(in_dir)));
+        %disp("File_inputs:");
+        %disp(file_inputs);
 
         fmri_filename = string(file_inputs(contains(file_inputs, '.nii.gz')));
         if isempty(fmri_filename)
@@ -383,10 +416,18 @@ switch use_case
         end
         
         % No logfile input error
+        % also handles combined input if individual carfiles are not given
         if (~isfile(physio.log_files.cardiac) && ~isfile(physio.log_files.respiration))
-            msg = append('Manual input: Log file(s) are invalid.');
-            error(msg);
+            try 
+                isfile(physio.log_files.cardiac_respiration);
+                physio.log_files.cardiac = physio.log_files.cardiac_respiration;
+                physio.log_files.respiration = physio.log_files.cardiac_respiration;
+            catch
+                msg = append('Manual input: Log file(s) are invalid. Input at least one logfile.');
+                error(msg);
+            end
         end
+            
         
         physio.save_dir = out_dir;
         
@@ -415,6 +456,13 @@ end
 
 end
 
+function [contents] = get_folder_contents(folder)
+    % gets the names of files in folder, minus . and ..
+    
+    temp = dir(folder);
+    contents = {temp(3:end).name};
+
+end
 
 function [physio] = run_physio(physio)
 

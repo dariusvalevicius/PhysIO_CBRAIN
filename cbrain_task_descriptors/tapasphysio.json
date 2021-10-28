@@ -1,10 +1,10 @@
 {
-    "tool-version": "9.0",
+    "tool-version": "8.0",
     "name": "PhysIO_Tapas",
     "description": "Tapas Physio: Physiological noise correction for fMRI",
     "author": "Lars Kasper, Zurich University and ETH Zurich",
     "descriptor-url": "https://github.com/dariusvalevicius/PhysIO_CBRAIN/blob/master/cbrain_task_descriptors/tapasphysio.json",
-    "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/tapasphysio [use_case] [OUTDIR] [correct] [INDIR] [fmri_file] [log_files.align_scan] [log_files.cardiac] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.other.input_multiple_regressors] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
+    "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/tapasphysio [use_case] [OUTDIR] [correct] [INDIR] [fmri_file] [log_files.align_scan] [log_files.cardiac] [log_files.cardiac_respiration] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.other.input_multiple_regressors] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.file] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
     "container-image": {
         "type": "docker",
         "image": "dvalev/tapasphysio:latest"
@@ -20,6 +20,17 @@
                 "single_run_folder",
                 "manual_input"
             ],
+            "value-disables": {
+                "bids_subject_folder": [
+                    "fmri_file"
+                ],
+                "single_run_folder": [
+                    "fmri_file"
+                ],
+                "manual_input": [
+                    "in_dir"
+                ]
+            },
             "type": "String",
             "id": "use_case",
             "name": "Use Case"
@@ -106,6 +117,15 @@
             "description": "Logfile with respiratory, i.e. breathing belt amplitude data.",
             "optional": true,
             "command-line-flag": "log_files.respiration"
+        },
+        {
+            "id": "log_files__cardiac_respiration",
+            "name": "Cardiac and Respiratory Logfile",
+            "value-key": "[log_files.cardiac_respiration]",
+            "type": "File",
+            "description": "Logfile with both cardiac and respiratory data. For use with vendors where one file is given for both modalities (E.G. Philips, BIDS).",
+            "optional": true,
+            "command-line-flag": "log_files.cardiac_respiration"
         },
         {
             "id": "log_files__relative_start_acquisition",
@@ -483,11 +503,11 @@
         {
             "id": "preproc__cardiac__posthoc_cpulse_select__file",
             "name": "Post-Hoc Selection File",
-            "value-key": "[preproc.cardiac.posthoc_cpulse_select.percentile]",
+            "value-key": "[preproc.cardiac.posthoc_cpulse_select.file]",
             "type": "String",
             "description": "Filename where cardiac pulses are saved after manual picking.",
             "optional": true,
-            "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.percentile"
+            "command-line-flag": "preproc.cardiac.posthoc_cpulse_select.file"
         },
         {
             "id": "preproc__cardiac__posthoc_cpulse_select__percentile",

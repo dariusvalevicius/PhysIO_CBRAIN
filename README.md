@@ -18,7 +18,9 @@ fMRI(corrected) = fMRI(raw) - Betas * multiple_regressors
 
 The output is the multiple_regressors.txt and diagnostic plots from PhysIO, as well as (if 'correct' is set to 'yes') a corrected fMRI image and a pct_var_reduced.nii image which shows the percent variance reduced by the regressors per each voxel. This can be visualized in e.g. SPM.
 
-In the current version of the script, it will scan the input folder for one or more fMRI files (depending on the use case) and automatically find the associated physiological logfiles. For instance, with use_case set to "BIDS_subject_folder", it will assume a BIDS-valid subject directory as input and scan through all 'func' folders for fMRI runs. For "Single_run", it will assume a folder has been input containing the BOLD and physio data for one fMRI run.
+In the current version of the script, it will scan the input folder for one or more fMRI files (depending on the use case) and automatically find the associated physiological logfiles. For instance, with use_case set to "BIDS_subject_folder", it will assume a BIDS-valid subject directory as input and scan through all 'func' folders for fMRI runs. For "Single_run_folder", it will assume a folder has been input containing the BOLD and physio data for one fMRI run.
+
+If the use case is set to "manual_input", no input directory is necessary, but the user must specify the fmri_file, cardiac logfile, and/or respiration logfile fields.
 
 The outputs will be placed in a new folder under "out_dir". In the case of either one or multiple fMRI runs, all the outputs pertaining to one run will be placed in a subdirectory named after the BOLD file. E.g. sub-02_ses-1_task_run-3.nii.gz would produce the output folder /sub-02_ses-1_task_run-3_physio_results.
 
