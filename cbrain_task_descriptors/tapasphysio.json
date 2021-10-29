@@ -22,10 +22,16 @@
             ],
             "value-disables": {
                 "bids_subject_folder": [
-                    "fmri_file"
+                    "fmri_file",
+                    "log_files__cardiac",
+                    "log_files__respiration",
+                    "log_files__cardiac_respiration"
                 ],
                 "single_run_folder": [
-                    "fmri_file"
+                    "fmri_file",
+                    "log_files__cardiac",
+                    "log_files__respiration",
+                    "log_files__cardiac_respiration"
                 ],
                 "manual_input": [
                     "in_dir"
