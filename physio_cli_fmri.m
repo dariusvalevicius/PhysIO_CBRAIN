@@ -250,7 +250,7 @@ switch use_case
             %disp(func);
 
             % Get fMRI files
-            fmri_files = func(contains(func, '.nii.gz'));
+            fmri_files = func(contains(func, '.nii'));
 
             if isempty(fmri_files)
                 msg = 'Did not find any fMRI files in func directory.';
@@ -283,7 +283,7 @@ switch use_case
 
                 % Set PhysIO params
 
-                save_foldername = append(extractBefore(j, '.nii.gz'), '_physio_results');
+                save_foldername = append(extractBefore(j, '.nii'), '_physio_results');
 
                 % Set fmri param
                 fmri_filename = string(fullfile(subject_folder, s, 'func', j));
@@ -309,7 +309,7 @@ switch use_case
                 physio.scan_timing.sqpar.Nslices = Nslices;
                 physio.scan_timing.sqpar.Nscans = Nframes;
 
-                physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
+                % physio.verbose.fig_output_file = append(run_string, '_fig_output.jpg');
                 
                 % Run physio
                 physio = run_physio(physio);
@@ -357,7 +357,7 @@ switch use_case
         %disp("File_inputs:");
         %disp(file_inputs);
 
-        fmri_filename = string(file_inputs(contains(file_inputs, '.nii.gz')));
+        fmri_filename = string(file_inputs(contains(file_inputs, '.nii')));
         if isempty(fmri_filename)
             msg = 'Did not find any fMRI files in input directory.';
             error(msg);
@@ -367,7 +367,7 @@ switch use_case
         end
         
         
-        run_string = extractBefore(fmri_filename, '_bold');
+        % run_string = extractBefore(fmri_filename, '_bold');
 
 
         % Find logfile
@@ -379,7 +379,7 @@ switch use_case
 
         % Set PhysIO params
 
-        save_foldername = append(extractBefore(fmri_filename, '.nii.gz'), '_physio_results');
+        save_foldername = append(extractBefore(fmri_filename, '.nii'), '_physio_results');
 
         % Unzip and set fmri param
         fmri_filename = fullfile(in_dir, fmri_filename);
@@ -397,7 +397,7 @@ switch use_case
         physio.scan_timing.sqpar.Nslices = Nslices;
         physio.scan_timing.sqpar.Nscans = Nframes;
 
-        physio.verbose.fig_output_file = append(run_string, '_fig_output.ps');
+        % physio.verbose.fig_output_file = append(run_string, '_fig_output.jpg');
 
         % Run physio
         physio = run_physio(physio);
@@ -437,7 +437,7 @@ switch use_case
         physio.scan_timing.sqpar.Nslices = Nslices;
         physio.scan_timing.sqpar.Nscans = Nframes;
 
-        physio.verbose.fig_output_file = append(fmri_file, '_fig_output.ps');
+        % physio.verbose.fig_output_file = append(fmri_file, '_fig_output.jpg');
         
         % Run physio
         physio = run_physio(physio);
@@ -469,7 +469,8 @@ function [physio] = run_physio(physio)
 % postpone figs
 disp('Postponing figure generation...');
 [physio, verbose_level, fig_output_file] = postpone_figures(physio);
-
+disp('fig name:');
+disp(fig_output_file);
 % Run PhysIO
 disp('Creating PhysIO regressors...');
 physio = tapas_physio_main_create_regressors(physio);
@@ -489,10 +490,10 @@ function [physio, verbose_level, fig_output_file] = postpone_figures(physio)
 if isfield(physio, 'verbose') && isfield(physio.verbose, 'level')
      verbose_level = physio.verbose.level;
      physio.verbose.level = 0;
-     if isfield(physio.verbose, 'fig_output_file')
+     if isfield(physio.verbose, 'fig_output_file') && ~strcmp(physio.verbose.fig_output_file, '')
          fig_output_file = physio.verbose.fig_output_file;
      else
-         fig_output_file = 'PhysIO_output.png'; 
+         fig_output_file = 'PhysIO_output.jpg'; 
      end    
 else
   verbose_level = 0;
@@ -564,7 +565,7 @@ disp('Writing niftis...');
 
 % Create output files
 [~,fmri_name_only,ext] = fileparts(fmri_filename);
-fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii.gz');
+fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii');
 fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
 
 niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
