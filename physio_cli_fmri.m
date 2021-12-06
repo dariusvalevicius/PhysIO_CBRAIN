@@ -547,14 +547,21 @@ disp('Running Correction...');
 disp('Correction complete.');
 fprintf('Maximum variance reduced(diagnostic): %d\n', max(pct_var_reduced, [], 'all'));
 
-disp('Writing niftis...');
+disp('Getting header info...');
+fmri_header = niftiinfo(string(fmri_filename));
 
+disp('Typecasting data...');
+data_type = fmri_header.Datatype;
+fmri_corrected_typecast = cast(fmri_corrected(:), data_type);
+fmri_corrected_typecast = reshape(fmri_corrected_typecast, size(fmri_corrected));
+
+disp('Writing niftis...');
 % Create output files
 [~,fmri_name_only,ext] = fileparts(fmri_filename);
 fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii');
 fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
 
-niftiwrite(fmri_corrected, fullfile(physio.save_dir, fmri_corrected_filename));
+niftiwrite(fmri_corrected_typecast, fullfile(physio.save_dir, fmri_corrected_filename), fmri_header);
 niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
 %gzip(strcat(physio.save_dir, '/fmri_corrected.nii'));
 
