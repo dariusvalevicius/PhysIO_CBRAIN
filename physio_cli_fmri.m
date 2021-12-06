@@ -152,21 +152,13 @@ if isfield(physio, 'fmri_file')
     fmri_file = physio.fmri_file;
 end
 
-    
-
-
 %% Scan subject directory and perform correction on each fMRI file
-
-
-% Set physlogfile suffix based on vendor
-vendor = physio.log_files.vendor;
 
 phys_ext = '';
 %cardiac_marker = '';
 %resp_marker = '';
 
-
-switch vendor
+switch physio.log_files.vendor
     case 'BIDS'
         phys_ext = '.tsv.gz';
         %n_logfiles = 1;
@@ -183,7 +175,6 @@ switch vendor
         phys_ext = '.eeg';
         %n_logfiles = 1;
 end
-
 
 switch use_case
     case 'bids_subject_folder'
@@ -330,8 +321,6 @@ switch use_case
             error(msg)
         end
         
-        
-        
         % Find fMRI file in input folder
         file_inputs = get_folder_contents(in_dir);
         
@@ -365,10 +354,7 @@ switch use_case
             msg = 'Too many ( > 1 ) fMRI files in input directory.';
             error(msg);
         end
-        
-        
         % run_string = extractBefore(fmri_filename, '_bold');
-
 
         % Find logfile
         logfile = string(file_inputs(contains(file_inputs, phys_ext)));
@@ -469,8 +455,8 @@ function [physio] = run_physio(physio)
 % postpone figs
 disp('Postponing figure generation...');
 [physio, verbose_level, fig_output_file] = postpone_figures(physio);
-disp('fig name:');
-disp(fig_output_file);
+%disp('fig name:');
+%disp(fig_output_file);
 % Run PhysIO
 disp('Creating PhysIO regressors...');
 physio = tapas_physio_main_create_regressors(physio);
@@ -615,10 +601,10 @@ var_corrected = var(fmri_corrected, 0, 4);
 %disp('Get difference in variance');
 pct_var_reduced = (var_raw - var_corrected) ./ var_raw;
 
-disp('Creating Mask...')
-mask = createMask(fmri_data);
+%disp('Creating Mask...')
+%mask = createMask(fmri_data);
 % niftiwrite(mask, 'mask_test.nii');
-pct_var_reduced = pct_var_reduced .* mask;
+%pct_var_reduced = pct_var_reduced .* mask;
 
 
 end
