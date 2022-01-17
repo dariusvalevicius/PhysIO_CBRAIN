@@ -1,6 +1,6 @@
 {
     "tool-version": "8.0",
-    "name": "PhysIO_Tapas",
+    "name": "PhysIO_Tapas_old",
     "description": "Tapas Physio: Physiological noise correction for fMRI",
     "author": "Lars Kasper, Zurich University and ETH Zurich",
     "descriptor-url": "https://github.com/dariusvalevicius/PhysIO_CBRAIN/blob/master/cbrain_task_descriptors/tapasphysio.json",
