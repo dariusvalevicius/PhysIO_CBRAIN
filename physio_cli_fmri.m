@@ -1,4 +1,4 @@
-function physio_cli_fmri(use_case, out_dir, correct, varargin)   
+function physio_cli_fmri(use_case, fmri_in, out_dir, correct, varargin)   
 %% A command line wrapper for the main entry function 
 % The main purpose of this script is integraton to CBRAIN yet it 
 % can be used with other frameworks as well, or compilation so tool can be used
@@ -11,6 +11,7 @@ function physio_cli_fmri(use_case, out_dir, correct, varargin)
 %
 % IN 
 %   in_dir           Folder containing input data (logfiles and fMRI data)
+%                    or fmri file for manual input
 %   out_dir          Name of folder for outputs
 %   use_case         Specifies what input directory structure to expect
 %   correct          Choose whether to correct fMRI run or just produce
@@ -90,7 +91,8 @@ addRequired(p, 'use_case');
 %addParameter(p, 'in_dir', 'none');
 % Not sure how this will work in tandem with boutiques. Setting all to
 % required now, with optional params defaulting to 'none'.
-%addRequired(p, 'in_dir');
+
+addRequired(p, 'fmri_in');
 
 addRequired(p, 'out_dir');
 
@@ -99,7 +101,7 @@ addRequired(p, 'out_dir');
 
 addRequired(p, 'correct');
 
-parse(p, use_case, out_dir, correct);
+parse(p, use_case, fmri_in, out_dir, correct);
 
 % Debugging: display inputs
 
@@ -142,15 +144,22 @@ end
 % values. Therefore they can't be passed as positional params, and have to
 % be extracted from varargin.
 
+% Update 17/01/2022:
+% Merged fmri_file and in_dir inputs into single argument to facilitate
+% output folder naming within the boutiques descriptor.
+
 in_dir = 'none';
 fmri_file = 'none';
 
-if isfield(physio, 'in_dir')
-    in_dir = physio.in_dir;
+switch use_case
+    case 'bids_subject_folder'
+        in_dir = fmri_in;
+    case 'single_run_folder'
+        in_dir = fmri_in;
+    case 'manual_input'
+        fmri_file = fmri_in;
 end
-if isfield(physio, 'fmri_file')
-    fmri_file = physio.fmri_file;
-end
+
 
 %% Scan subject directory and perform correction on each fMRI file
 
@@ -309,6 +318,10 @@ switch use_case
                 if(strcmpi(correct, 'yes'))
                     performCorrection(fmri_filename, fmri_j, physio);
                 end
+                
+                % Get HR and BR
+                %write_hr_br(physio)
+
 
             end
 
@@ -392,6 +405,9 @@ switch use_case
         if(strcmpi(correct, 'yes'))
             performCorrection(fmri_filename, fmri_data, physio);
         end
+        
+        % Get HR and BR
+        %write_hr_br(physio)
     
     case 'manual_input'
         
@@ -433,6 +449,9 @@ switch use_case
             performCorrection(fmri_file, fmri_data, physio);
         end
         
+        % Get HR and BR
+        %write_hr_br(physio)
+        
     otherwise
         msg = 'No valid use-case selected.';
         error(msg);
@@ -441,6 +460,14 @@ end
 
 
 end
+
+%{
+function write_hr_br(physio)
+    [hr_hz, hr_bpm, br_hz, br_bpm] = get_hr_br(physio)
+    t = table(hr_hz, hr_bpm, br_hz, br_bpm);
+    writetable(t, 'hr_br.txt', 'Delimiter', '\t');
+end
+%}
 
 function [contents] = get_folder_contents(folder)
     % gets the names of files in folder, minus . and ..
@@ -558,8 +585,27 @@ fmri_corrected_typecast = reshape(fmri_corrected_typecast, size(fmri_corrected))
 disp('Writing niftis...');
 % Create output files
 [~,fmri_name_only,ext] = fileparts(fmri_filename);
-fmri_name_only = extractBefore(append(fmri_name_only, ext), '.nii');
-fmri_corrected_filename = append(fmri_name_only, '_corrected.nii');
+fmri_name_models = extractBefore(append(fmri_name_only, ext), '.nii');
+
+% Append model names
+if physio.model.retroicor.include
+    fmri_name_models = append(fmri_name_models, '_retroicor');
+end
+if physio.model.rvt.include
+    fmri_name_models = append(fmri_name_models, '_rvt');
+end
+if physio.model.hrv.include
+    fmri_name_models = append(fmri_name_models, '_hrv');
+end
+if physio.model.noise_rois.include
+    fmri_name_models = append(fmri_name_models, '_noiseRois');
+end
+if physio.model.movement.include
+    fmri_name_models = append(fmri_name_models, '_movement');
+end
+
+
+fmri_corrected_filename = append(fmri_name_models, '_corrected.nii');
 
 niftiwrite(fmri_corrected_typecast, fullfile(physio.save_dir, fmri_corrected_filename), fmri_header);
 niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
@@ -641,8 +687,8 @@ function [physio] = setDefaults(physio)
 
 physio.save_dir = {'physio_out'};
 physio.log_files.vendor = 'Philips';
-physio.log_files.cardiac = '<UNDEFINED>';
-physio.log_files.respiration = '<UNDEFINED>';
+%physio.log_files.cardiac = '<UNDEFINED>';
+%physio.log_files.respiration = '<UNDEFINED>';
 physio.log_files.relative_start_acquisition = 0;
 physio.log_files.align_scan = 'last';
 physio.scan_timing.sqpar.Nslices = '<UNDEFINED>';
