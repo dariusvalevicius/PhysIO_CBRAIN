@@ -1041,6 +1041,7 @@
         "walltime-estimate": 3660
     },
     "custom": {
+        "cbrain:author": "Darius Valevicius <darius.valevicius@mail.mcgill.ca>",
         "cbrain:readonly-input-files": true
     }
 }
