@@ -17,16 +17,10 @@
             "list": false,
             "value-choices": [
                 "bids_subject_folder",
-                "single_run_folder",
                 "manual_input"
             ],
             "value-disables": {
                 "bids_subject_folder": [
-                    "log_files__cardiac",
-                    "log_files__respiration",
-                    "log_files__cardiac_respiration"
-                ],
-                "single_run_folder": [
                     "log_files__cardiac",
                     "log_files__respiration",
                     "log_files__cardiac_respiration"
