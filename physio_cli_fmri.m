@@ -57,12 +57,10 @@ function physio_cli_fmri(use_case, fmri_in, out_dir, correct, varargin)
 %
 % See also tapas_physio_new
 
-% Author:    Serge Boroday
+% Authors:    Serge Boroday, Darius Valevicius
 % Created:   2021-03-16
 % Copyright: McGill University
 %
-% Modified by:  Darius Valevicius
-% Date:         2021-06-22
 %
 % The original tool is by Institute for Biomedical Engineering, 
 %               University of Zurich and ETH Zurich.
@@ -109,6 +107,19 @@ parse(p, use_case, fmri_in, out_dir, correct);
 
 %disp(input_msg);
 
+
+%% Start diary
+
+diary_file = fullfile(out_dir, 'derivatives', 'PhysIO', 'cbrain_physio.log');
+disp(diary_file);
+mkdir(fullfile(out_dir, 'derivatives', 'PhysIO'));
+
+[fid, msg] = fopen(diary_file, 'w');
+disp(msg);
+fprintf(fid, 'Log of PhysIO on CBRAIN\n');
+fprintf(fid, append(string(datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')), '\n'));
+fclose(fid);
+diary(diary_file);
 
 %% Create default parameter structure with all fields
 physio = tapas_physio_new();
@@ -219,25 +230,28 @@ switch use_case
             filename = file.name;
             b_filepath = file.folder;
             
-            fprintf('Processing file: %s\n', filename);
+            fprintf('\n\nProcessing file: %s\n', filename);
             
             % set fmri file
             fmri_file = fullfile(b_filepath, filename);
             
-            % see if file is in session folder
+            % get subject folder and session tokens
+            subject_folder = append('sub-', extractBetween(filename, 'sub-', '_'));
             session = '';
             if contains(filename, '_ses-')
                 session = append('ses-', extractBetween(filename, 'ses-', '_'));
             end
-                 
+           
             % create save file name
             save_filename = insertBefore(filename, 'bold', 'corrected-physio_');
             % Get subject folder name
-            [~, bids_name, bids_ext] = fileparts(in_dir);
-            subject_folder = strcat(bids_name, bids_ext);
+            % [~, bids_name, bids_ext] = fileparts(in_dir);
+            %subject_folder = strcat(bids_name, bids_ext);
             % get folder name for diagnostic outputs
-            [~, fmri_name, ~] = fileparts(save_filename);
-            physio.save_dir = fullfile(out_dir, 'PhysIO', subject_folder, session, 'func', fmri_name);
+            %[~, fmri_name, ~] = fileparts(save_filename);
+            fmri_name = extractBefore(save_filename, '.nii');
+            physio.save_dir = fullfile(out_dir, 'derivatives', 'PhysIO', subject_folder, session, 'func', fmri_name);
+            physio.save_dir_fmri = fullfile(out_dir, 'derivatives', 'PhysIO', subject_folder, session, 'func');
             % mkdir(physio.save_dir);
         
             % loop through physio files
@@ -393,7 +407,8 @@ if(strcmpi(physio.correct, 'yes'))
     disp('Writing niftis...');
     
     fmri_corrected_filename = create_output_filename(physio, fmri_file);
-    fmri_corrected_fullfile = fullfile(physio.save_dir, fmri_corrected_filename);
+    fmri_corrected_fullfile = string(fullfile(physio.save_dir_fmri, fmri_corrected_filename));
+    % disp(fmri_corrected_fullfile);
     
     niftiwrite(fmri_corrected_typecast, fmri_corrected_fullfile, nifti_header);
     niftiwrite(pct_var_reduced, fullfile(physio.save_dir, 'pct_var_reduced.nii'));
