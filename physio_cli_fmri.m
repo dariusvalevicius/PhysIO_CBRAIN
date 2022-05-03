@@ -180,7 +180,7 @@ in_dir = 'none';
 fmri_file = 'none';
 
 switch use_case
-    case 'bids_subject_folder'
+    case 'bids_directory'
         in_dir = fmri_in;
     case 'manual_input'
         fmri_file = fmri_in;
@@ -202,7 +202,7 @@ end
 
 
 switch use_case
-    case 'bids_subject_folder'
+    case 'bids_directory'
         
         % From input/subject folder
         % Get every nifti in func
@@ -320,6 +320,8 @@ switch use_case
     
 end
 
+diary off;
+
 end
 
 function physio_wrap(fmri_file, physio)
@@ -342,7 +344,16 @@ disp('Postponing figure generation...');
 %disp(fig_output_file);
 % Run PhysIO
 disp('Creating PhysIO regressors...');
-physio = tapas_physio_main_create_regressors(physio);
+
+% try catch main PhysIO process
+% if failure, skip to next file (exit function)
+try
+    physio = tapas_physio_main_create_regressors(physio);
+catch err
+    fprintf('PhysIO error occured when processing file: %s.\n', fmri_file);
+    disp(getReport(err,'extended', 'hyperlinks', 'off'));
+   return
+end
 disp('Complete.');
 
 % generate figures without rendering
