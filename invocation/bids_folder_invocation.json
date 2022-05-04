@@ -1,8 +1,8 @@
 {
-    "use_case": "bids_subject_folder",
-    "fmri_in": "ds003477/sub-03",
+    "use_case": "bids_directory",
+    "fmri_in": "test_data/sub-17",
     "out": "physio_results_bids",
     "correct": "yes",
-    "log_files__vendor": "BIDS",
+    "log_files__vendor": "Philips",
     "preproc__cardiac__modality": "PPU_WiFi"
 }
