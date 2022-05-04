@@ -8,7 +8,7 @@
     "container-image": {
         "image": "dvalev/tapasphysio:version1.1.2",
         "index": "docker://",
-        "type": "docker"
+        "type": "singularity"
     },
     "inputs": [
         {
