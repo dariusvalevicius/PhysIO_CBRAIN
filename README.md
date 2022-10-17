@@ -48,7 +48,7 @@ Here is an example of a pct_var_reduced output image:
 
 The shell script requires the PhysIO codebase (get [here](https://github.com/translationalneuromodeling/tapas)) to be copied into the project directory.
 
-# CBRAIN integration
+## CBRAIN integration
 For integration into CBRAIN, the shell script (along with all PhysIO scripts) must be compiled and containerized. Compilation allows for the code to be run without a MATLAB installation or license. Containerizing the compiled tool (with Singularity or Docker) allows the tool to be run with all dependencies from any machine.
 
 Serge Boroday has written a guide for preparing MATLAB tools for CBRAIN [here.](matlab_to_cbrain.md)
@@ -57,7 +57,7 @@ Both compilation and containerization (with Docker) can be done via MATLAB's Com
 
 The current version of the docker image can be accessed at https://hub.docker.com/repository/docker/dvalev/physio_cbrain or referenced via docker://dvalev/physio_cbrain.
 
-# Boutiques descriptor
+## Boutiques descriptor
 
 Also provided in the project files is the boutiques descriptor, physio_cbrain.json.
 
