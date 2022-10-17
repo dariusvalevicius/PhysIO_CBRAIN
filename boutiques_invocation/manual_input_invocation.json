@@ -1,0 +1,9 @@
+{
+    "use_case": "manual_input",
+    "fmri_in": "sub-03_ses-1_task-face_run-1_bold.nii.gz",
+    "out": "physio_results_manual",
+    "correct": "yes",
+    "log_files__vendor": "Philips",
+    "log_files__cardiac_respiration": "sub-03_ses-1_task-face_run-1_recording-respcardiac_physio.log",
+    "preproc__cardiac__modality": "PPU_WiFi"
+}

@@ -1,19 +1,19 @@
 {
-    "tool-version": "8.0",
-    "name": "PhysIO_Tapas",
+    "tool-version": "8.1.0",
+    "name": "TAPAS PhysIO",
     "description": "Tapas Physio: Physiological noise correction for fMRI",
     "author": "Lars Kasper, Zurich University and ETH Zurich",
     "descriptor-url": "https://github.com/dariusvalevicius/PhysIO_CBRAIN/blob/master/cbrain_task_descriptors/tapasphysio.json",
-    "command-line": "mkdir -p [OUTDIR]; /usr/bin/mlrtapp/tapasphysio [use_case] [FMRI_IN] [OUTDIR] [correct] [log_files.align_scan] [log_files.cardiac] [log_files.cardiac_respiration] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.other.input_multiple_regressors] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.file] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
+    "command-line": "mkdir -p [OUTDIR]; physio_cbrain [USE_CASE] [FMRI_IN] [OUTDIR] [CORRECT] [log_files.align_scan] [log_files.cardiac] [log_files.cardiac_respiration] [log_files.relative_start_acquisition] [log_files.respiration] [log_files.scan_timing] [log_files.vendor] [log_files.sampling_interval] [model.censor_unreliable_recording_intervals] [model.hrv.delays] [model.hrv.include] [model.movement.censoring_method] [model.movement.censoring_threshold] [model.movement.file_realignment_parameters] [model.movement.include] [model.movement.order] [model.noise_rois.force_coregister] [model.noise_rois.include] [model.noise_rois.n_components] [model.noise_rois.n_voxel_crop] [model.noise_rois.thresholds] [model.noise_rois.fmri_files] [model.noise_rois.roi_files] [model.orthogonalise] [model.other.include] [model.other.input_multiple_regressors] [model.output_multiple_regressors] [model.output_physio] [model.retroicor.include] [model.retroicor.order.c] [model.retroicor.order.cr] [model.retroicor.order.r] [model.rvt.delays] [model.rvt.include] [preproc.cardiac.filter.passband] [preproc.cardiac.filter.type] [preproc.cardiac.initial_cpulse_select.file] [preproc.cardiac.initial_cpulse_select.max_heart_rate_bpm] [preproc.cardiac.initial_cpulse_select.method] [preproc.cardiac.initial_cpulse_select.min] [preproc.cardiac.modality] [preproc.cardiac.posthoc_cpulse_select.lower_thresh] [preproc.cardiac.posthoc_cpulse_select.method] [preproc.cardiac.posthoc_cpulse_select.file] [preproc.cardiac.posthoc_cpulse_select.percentile] [preproc.cardiac.posthoc_cpulse_select.upper_thresh] [preproc.cardiac.filter.include] [preproc.cardiac.filter.stopband] [scan_timing.sqpar.Ndummies] [scan_timing.sqpar.Nscans] [scan_timing.sqpar.Nslices] [scan_timing.sqpar.onset_slice] [scan_timing.sqpar.TR] [scan_timing.sqpar.NslicesPerBeat] [scan_timing.sqpar.time_slice_to_slice] [scan_timing.sqpar.Nprep] [scan_timing.sync.grad_direction] [scan_timing.sync.method] [scan_timing.sync.slice] [scan_timing.sync.zero] [scan_timing.sync.vol] [scan_timing.sync.vol_spacing] [verbose.fig_output_file] [verbose.level]",
     "container-image": {
-        "image": "dvalev/tapasphysio:version1.1.2",
+        "image": "dvalev/physio_cbrain:1.1.3",
         "index": "docker://",
         "type": "singularity"
     },
     "inputs": [
         {
-            "description": "Options for input formats.\nbids_subject_folder: Input the top level folder for a single subject. Must follow BIDS conventions. All contained fMRI runs will be processed.\nsingle_run_folder: Folder containing one run of data.\nmanual_input: Loose files as input. Must specify fMRI file and physlog files.\nWARNING: BIDS folder and single run folder options are currently experimental and may fail, especially with vendors other than BIDS and Philips. Only vendors which produce a single logfile for both resp+cardiac are supported at the moment.",
-            "value-key": "[use_case]",
+            "description": "Options for input formats.\nbids_directory: Input the top level folder for a BIDS subject OR dataset. All contained fMRI runs will be processed.\nmanual_input: Loose files as input. Must specify fMRI file and physlog files.\nWARNING: BIDS folder and single run folder options are currently experimental and may fail, especially with vendors other than BIDS and Philips. Only vendors which produce a single logfile for both resp+cardiac are supported at the moment.",
+            "value-key": "[USE_CASE]",
             "optional": false,
             "list": false,
             "value-choices": [
@@ -53,7 +53,7 @@
         {
             "description": "Produce corrected copies of fMRI images.",
             "default-value": "no",
-            "value-key": "[correct]",
+            "value-key": "[CORRECT]",
             "optional": false,
             "list": false,
             "value-choices": [
@@ -62,7 +62,7 @@
             ],
             "type": "String",
             "id": "correct",
-            "name": "Correct noise"
+            "name": "Correct Image"
         },
         {
             "id": "log_files__vendor",
@@ -150,7 +150,7 @@
             "id": "log_files__sampling_interval",
             "name": "Sampling Interval",
             "value-key": "[log_files.sampling_interval]",
-            "type": "String",
+            "type": "Number",
             "description": "Sampling interval of phys log files (in seconds).",
             "optional": true,
             "command-line-flag": "log_files.sampling_interval"

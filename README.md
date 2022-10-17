@@ -1,14 +1,14 @@
 # PhysIO_CBRAIN
-PhysIO shell script with automated fMRI image correction. Also included is the Boutiques descriptor for integration into CBRAIN.
+PhysIO wrapper script with automated fMRI image correction. Also included is the Boutiques descriptor for integration into CBRAIN.
 
 PhysIO is written by Lars Kasper, University of Zurich and ETH Zurich. It can be accessed [here.](https://github.com/translationalneuromodeling/tapas)
 
-Shell script written by Serge Boroday and Darius Valevicius.
+Wrapper script written by Serge Boroday and Darius Valevicius.
 
 
-# Shell script
+# Wrapper script
 
-physio_cli_fmri.m is the shell script. The main purpose of this is to take parameters from the boutiques/CBRAIN interface and pass them to the TAPAS PhysIO toolbox. Secondarily, it can take the output from PhysIO and apply a correction to fMRI BOLD data.
+physioWrapper.m is the main wrapper script. The main purpose of this is to take parameters from the boutiques/CBRAIN interface and pass them to the TAPAS PhysIO toolbox. Secondarily, it can take the output from PhysIO and apply a correction to fMRI BOLD data.
 
 It takes as input input and output directory names ('in_dir' and 'out_dir'), a specification of the input format ('use_case'; see below), an option to correct the image or simply produce physiological regressors ('correct'), and any number of PhysIO parameters, which are specified in the boutiques descriptor and documented in the tapas_physio_new.m script of PhysIO.
 
@@ -26,7 +26,7 @@ The outputs will be placed in a new folder under "out_dir". In the case of eithe
 
 Here is an example of a pct_var_reduced output image:
 
-![for example...](figures/spin001_resting_post1_var_reduced.png)
+![for example...](var_reduced_example.png)
 
 "Hot" areas indicate where a large amount of variance has been accounted for by cardiac and/or respiratory models.
 

@@ -1,4 +1,4 @@
-function header = get_bids_physlogfile_sidecar(physlogfile)
+function header = getBidsPhyslogSidecar(physlogfile)
 
 header_file = extractBefore(physlogfile, '.tsv');
 json_filename = append(header_file, '.json');

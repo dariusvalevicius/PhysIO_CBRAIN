@@ -1,4 +1,4 @@
-function [logfile] = read_philips_physlogfile(physlogfile)
+function [logfile] = readPhilipsPhyslog(physlogfile)
 
 fid = fopen(physlogfile, 'r');
 
