@@ -26,7 +26,7 @@ The outputs will be placed in a new folder under "out_dir". In the case of eithe
 
 Here is an example of a pct_var_reduced output image:
 
-![for example...](var_reduced_example.png)
+![for example...](figures/var_reduced_example.png)
 
 "Hot" areas indicate where a large amount of variance has been accounted for by cardiac and/or respiratory models.
 
