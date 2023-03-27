@@ -96,7 +96,7 @@ mkdir(fullfile(out_dir, 'derivatives', 'PhysIO'));
 [fid, msg] = fopen(diary_file, 'w');
 disp(msg);
 fprintf(fid, 'Log of PhysIO on CBRAIN\n');
-fprintf(fid, append(string(datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')), '\n'));
+% fprintf(fid, append(string(datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')), '\n'));
 fclose(fid);
 diary(diary_file);
 

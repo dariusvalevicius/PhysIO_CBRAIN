@@ -8,3 +8,9 @@ RUN chmod a+x /opt/physio_cbrain
 
 # Add wrapper directory to path
 ENV PATH="${PATH}:/opt/"
+
+# Run as non-root user
+RUN useradd cbrain_user
+USER cbrain_user
+
+ENV MCR_CACHE_ROOT="/tmp/mcr"
