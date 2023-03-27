@@ -42,7 +42,7 @@ The outputs will be placed in a new folder under "out_dir". In the case of eithe
 
 Here is an example of a pct_var_reduced output image:
 
-![for example...](figures/var_reduced_example.png)
+![for example...](docs/figures/var_reduced_example.png)
 
 "Hot" areas indicate where a large amount of variance has been accounted for by cardiac and/or respiratory models.
 
@@ -51,7 +51,7 @@ The shell script requires the PhysIO codebase (get [here](https://github.com/tra
 ## CBRAIN integration
 For integration into CBRAIN, the shell script (along with all PhysIO scripts) must be compiled and containerized. Compilation allows for the code to be run without a MATLAB installation or license. Containerizing the compiled tool (with Singularity or Docker) allows the tool to be run with all dependencies from any machine.
 
-Serge Boroday has written a guide for preparing MATLAB tools for CBRAIN [here.](matlab_to_cbrain.md)
+Serge Boroday has written a guide for preparing MATLAB tools for CBRAIN [here.](docs/matlab_to_cbrain.md)
 
 Both compilation and containerization (with Docker) can be done via MATLAB's Compiler Toolkit.
 
@@ -60,7 +60,5 @@ The current version of the docker image can be accessed at https://hub.docker.co
 ## Boutiques descriptor
 
 Also provided in the project files is the boutiques descriptor, physio_cbrain.json.
-
-Boutiques is a software package that defines the structure of a command line interface command. cbrain_task_descriptors/tapasphysio.json defines 
 
 Boutiques documentation and installation are available [here.](https://github.com/boutiques/boutiques)
