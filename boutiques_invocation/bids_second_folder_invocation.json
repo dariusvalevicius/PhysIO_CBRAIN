@@ -1,0 +1,8 @@
+{
+    "use_case": "bids_directory",
+    "fmri_in": "data/example_data/sub-02",
+    "out": "physio_out",
+    "correct": "yes",
+    "log_files__vendor": "Philips",
+    "preproc__cardiac__modality": "PPU_WiFi"
+}

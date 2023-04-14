@@ -48,10 +48,16 @@ if(strcmpi(physio.correct, 'yes'))
     % Run correction
     % Correction algorithm adapted from Catie Chang
 
+    % Get raw variance
+    var_raw = var(fmri_data, 0, 4);
+
     disp('Arranging label...');
     % Arrange data label
     Y = reshape(fmri_data, physio.x_size*physio.y_size*physio.scan_timing.sqpar.Nslices, physio.scan_timing.sqpar.Nscans)';
     t = (1:physio.scan_timing.sqpar.Nscans)';
+
+    % clear fmri_data for memory
+    clear fmri_data
 
     disp('Setting up design matrix...');
     % Set design matrix
@@ -64,13 +70,16 @@ if(strcmpi(physio.correct, 'yes'))
     % data to correct
     Betas = XX\Y;
     Y_corr = Y - XX(:,4:end)*Betas(4:end,:);
+    clear Y % For memory saving
 
     disp('Correcting...');
     fmri_corrected = reshape(Y_corr', physio.x_size, physio.y_size, physio.scan_timing.sqpar.Nslices, physio.scan_timing.sqpar.Nscans);
+    clear Y_corr % For memory saving
 
     disp('Computing pct var reduced...');
     % Compute pct var reduced (3D double)
-    var_raw = var(fmri_data, 0, 4);
+    %var_raw = var(fmri_data, 0, 4); Moved up so fmri_data can be cleared
+    %before correction
     var_corrected = var(fmri_corrected, 0, 4);
     pct_var_reduced = (var_raw - var_corrected) ./ var_raw;
 
@@ -80,8 +89,9 @@ if(strcmpi(physio.correct, 'yes'))
 
     disp('Typecasting data...');
     data_type = nifti_header.Datatype;
-    fmri_corrected_typecast = cast(fmri_corrected(:), data_type);
-    fmri_corrected_typecast = reshape(fmri_corrected_typecast, size(fmri_corrected));
+    fmri_corrected_typecast = reshape(cast(fmri_corrected(:), data_type), size(fmri_corrected));
+    %fmri_corrected_typecast = reshape(fmri_corrected_typecast, size(fmri_corrected));
+    clear fmri_corrected % Memory
 
     disp('Writing niftis...');
     
@@ -103,10 +113,10 @@ if(strcmpi(physio.correct, 'yes'))
     disp('Complete.');
 end
 
-% Get HR and BR
-[heartrate_hz, heartrate_bpm, breathing_hz, breathing_bpm] = estimateBrHr(physio);
-t = table(heartrate_hz, heartrate_bpm, breathing_hz, breathing_bpm);
-writetable(t, fullfile(physio.save_dir, 'hr_br.txt'), 'Delimiter', '\t');
+% Get HR and BR [DISABLED due to inconsistent behaviour]
+%[heartrate_hz, heartrate_bpm, breathing_hz, breathing_bpm] = estimateBrHr(physio);
+%t = table(heartrate_hz, heartrate_bpm, breathing_hz, breathing_bpm);
+%writetable(t, fullfile(physio.save_dir, 'hr_br.txt'), 'Delimiter', '\t');
 
 end
 

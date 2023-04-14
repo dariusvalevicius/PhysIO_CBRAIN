@@ -5,3 +5,6 @@ single-run-input/*
 *.asv
 *.log
 *.nii.gz
+archive/
+archive
+standalone/

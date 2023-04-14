@@ -89,9 +89,9 @@ parse(p, use_case, fmri_in, out_dir, correct);
 
 %% Start diary
 
-diary_file = fullfile(out_dir, 'derivatives', 'PhysIO', 'cbrain_physio.log');
+diary_file = fullfile(out_dir, 'cbrain_physio.log');
 disp(diary_file);
-mkdir(fullfile(out_dir, 'derivatives', 'PhysIO'));
+mkdir(out_dir);
 
 [fid, msg] = fopen(diary_file, 'w');
 disp(msg);
@@ -145,6 +145,11 @@ switch physio.log_files.vendor
         phys_ext = '.tsv';
     case 'Philips'
         phys_ext = '.log';
+    otherwise
+        if strcmp(use_case, 'bids_directory')
+            msg = 'BIDS Error: Only BIDS and Philips vendors are supported!';
+            error(msg)
+        end
 end
 
 if strcmp(use_case, 'bids_directory')
@@ -160,9 +165,21 @@ if strcmp(use_case, 'bids_directory')
     
     % Get all bold files
     bold_filelist = dir(fullfile(in_dir, '**/*bold.nii*'));
+    
     %disp(bold_filelist)
     % Get all physio files
     physio_filelist = dir(fullfile(in_dir, sprintf('**/*physio%s*', phys_ext)));
+
+    if isempty(bold_filelist)
+        msg = 'BIDS Error: No bold files found!';
+        error(msg);
+    end
+
+    if isempty(physio_filelist)
+        msg = 'BIDS Error: No physiological files found!';
+        error(msg);
+    end
+
     
     % loop through bold files
     for i = 1:numel(bold_filelist)
@@ -185,8 +202,8 @@ if strcmp(use_case, 'bids_directory')
         % create save file name
         save_filename = insertBefore(filename, 'bold', 'corrected-physio_');
         fmri_name = extractBefore(save_filename, '.nii');
-        physio.save_dir = fullfile(out_dir, 'derivatives', 'PhysIO', subject_folder, session, 'func', fmri_name);
-        physio.save_dir_fmri = fullfile(out_dir, 'derivatives', 'PhysIO', subject_folder, session, 'func');
+        physio.save_dir = fullfile(out_dir, subject_folder, session, 'func', fmri_name);
+        physio.save_dir_fmri = fullfile(out_dir, subject_folder, session, 'func');
         % mkdir(physio.save_dir);
     
         % loop through physio files
@@ -244,8 +261,8 @@ elseif strcmp(use_case, 'manual_input')
     runPhysio(fmri_file, physio);
 
 else
-        msg = 'No valid use-case selected.';
-        error(msg);
+    msg = 'No valid use-case selected.';
+    error(msg);
 end
 
 disp('PhysIO on CBRAIN has completed.')
