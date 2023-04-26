@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.4 (14/04/2023)
+## 1.2.0 (14/04/2023)
 
 - Fixed memory issues with large NifTI files
 - Added error messages when data cannot be found in BIDS folder
