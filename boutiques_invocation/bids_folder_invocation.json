@@ -1,6 +1,6 @@
 {
     "use_case": "bids_directory",
-    "fmri_in": "data/example_data/sub-01",
+    "fmri_in": "data/sub-01",
     "out": "output",
     "correct": "yes",
     "log_files__vendor": "BIDS",

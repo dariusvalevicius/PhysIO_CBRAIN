@@ -1,0 +1,4 @@
+archive/
+*_out_*/
+data/
+.git/
